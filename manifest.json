@@ -2,7 +2,7 @@
   "name": "MP3 & MP4 Player",
   "short_name": "MediaPlayer",
   "description": "Pemutar media ringan berbasis PWA",
-"start_url": "/MediaPlayer/index.html"
+  "start_url": "/MediaPlayer/index.html",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#000000",
