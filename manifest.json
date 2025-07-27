@@ -1,11 +1,11 @@
 {
-  "name": "MP3 & MP4 Player",
-  "short_name": "MediaPlayer",
-  "description": "Pemutar media ringan berbasis PWA",
+  "name": "MediaPlayer",
+  "short_name": "Player",
+  "description": "Pemutar media ringan & cepat, berbasis PWA",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#000000",
-  "theme_color": "#000000",
+  "theme_color": "#111111",
   "icons": [
     {
       "src": "assets/icon-192.png",
