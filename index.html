@@ -90,6 +90,9 @@
   <!-- Input Pilih File -->
   <input type="file" id="filePicker" accept="audio/*,video/*" multiple />
 
+<button id="installBtn" style="display:none; margin-top: 20px; padding: 10px 20px; background: #0af; color: white; border: none; border-radius: 8px; cursor: pointer;">
+  📥 Install Aplikasi
+</button>
   <script>
     const modeSelect = document.getElementById("modeSelect");
     const audioPlayer = document.getElementById("audioPlayer");
@@ -158,12 +161,37 @@
       loadCurrent();
     });
     
+    let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+
+  // Contoh: tampilkan tombol install
+  const installBtn = document.getElementById('installBtn');
+  installBtn.style.display = 'block';
+
+  installBtn.addEventListener('click', () => {
+    installBtn.style.display = 'none';
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then((choiceResult) => {
+      if (choiceResult.outcome === 'accepted') {
+        console.log('User accepted the install prompt');
+      } else {
+        console.log('User dismissed the install prompt');
+      }
+      deferredPrompt = null;
+    });
+  });
+});
+    
     
   if ('serviceWorker' in navigator) {    
     navigator.serviceWorker.register('sw.js')    
       .then(reg => console.log('✅ Service Worker registered:', reg.scope))    
       .catch(err => console.error('❌ Service Worker registration failed:', err));    
   }    
+  
+  
   </script>
 </body>
 </html>
