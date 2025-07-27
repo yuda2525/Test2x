@@ -2,148 +2,172 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RasaNusa - Camilan Lokal Kekinian</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#000000" />
+
+  <!-- App Title -->
+  <title>MP3/MP4 Player</title>
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json" />
+
+  <!-- Favicon & Icons -->
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192.png" />
+  <link rel="apple-touch-icon" href="assets/icon-192.png" />
+
+  <!-- iOS PWA Compatibility -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="MediaPlayer" />
+  <title>Hybrid MP3/MP4 Player</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
       margin: 0;
-      padding: 0;
-      background: #fdfaf6;
-      color: #333;
+      background: #111;
+      color: white;
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
     }
-
-    header {
-      background: #712f26;
-      color: #fff;
-      padding: 30px 20px;
-      text-align: center;
-    }
-
-    header h1 {
-      margin: 0;
-      font-size: 2.5rem;
-    }
-
-    header p {
-      margin-top: 10px;
-      font-size: 1.2rem;
-    }
-
-    section {
-      padding: 40px 20px;
-      max-width: 900px;
-      margin: auto;
-    }
-
-    h2 {
-      color: #712f26;
-      font-size: 1.6rem;
-      margin-bottom: 15px;
-    }
-
-    .produk {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-    }
-
-    .produk-item {
-      background: #fff;
-      border: 1px solid #ddd;
-      padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-      transition: transform 0.2s ease;
-    }
-
-    .produk-item:hover {
-      transform: translateY(-3px);
-    }
-
-    .keunggulan {
-      padding-left: 20px;
-      line-height: 1.6;
-    }
-
-    .cta {
-      background: #f4e9e2;
-      padding: 30px;
-      text-align: center;
-      margin-top: 40px;
-      border-radius: 12px;
-    }
-
-    .cta a {
-      display: inline-block;
-      background: #712f26;
-      color: #fff;
-      padding: 12px 28px;
-      border-radius: 5px;
-      text-decoration: none;
-      font-size: 1rem;
-      margin-top: 15px;
-    }
-
-    .tentang {
-      margin-bottom: 40px;
-    }
-
-    .testimoni {
-      font-style: italic;
-      background: #fff;
-      padding: 20px;
-      border-left: 4px solid #712f26;
+    video, audio {
+      width: 90%;
+      max-width: 500px;
       margin-top: 20px;
+      display: none;
+      border-radius: 16px;
+      box-shadow: 0 0 12px #0ff4;
+    }
+    .controls {
+      margin-top: 10px;
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      align-items: center;
+    }
+    button {
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+    }
+    select {
+      margin-top: 15px;
+      padding: 6px 12px;
       border-radius: 6px;
+      background: #222;
+      color: white;
+    }
+    input[type="file"] {
+      margin-top: 10px;
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>RasaNusa</h1>
-    <p>Cita Rasa Tradisi, Kemasan Masa Kini</p>
-  </header>
 
-  <section>
-    <div class="tentang">
-      <h2>Tentang RasaNusa</h2>
-      <p>RasaNusa adalah brand camilan lokal yang membawa kekayaan rasa tradisional Indonesia dalam kemasan modern dan higienis. Diciptakan untuk pecinta kuliner nusantara, cocok untuk oleh-oleh, hampers, maupun konsumsi harian sehat tanpa MSG.</p>
-    </div>
+  <h2>🎧 Hybrid Player</h2>
 
-    <h2>Produk Unggulan</h2>
-    <div class="produk">
-      <div class="produk-item">
-        <strong>Keripik Sukun</strong><br />
-        Rp18.000 – Renyah alami dari buah sukun Maluku.
-      </div>
-      <div class="produk-item">
-        <strong>Emping Melinjo</strong><br />
-        Rp20.000 – Gurih klasik khas Banten.
-      </div>
-      <div class="produk-item">
-        <strong>Rengginang Mini</strong><br />
-        Rp15.000 – Camilan ringan khas rumahan.
-      </div>
-    </div>
+  <!-- Mode Switch -->
+  <select id="modeSelect">
+    <option value="audio">🎵 Mode Audio (MP3)</option>
+    <option value="video">🎥 Mode Video (MP4)</option>
+  </select>
 
-    <h2>Keunggulan</h2>
-    <ul class="keunggulan">
-      <li>Bahan Lokal Asli</li>
-      <li>Tanpa MSG & Pengawet</li>
-      <li>Cocok untuk oleh-oleh kekinian</li>
-      <li>Bisa jadi hampers atau snack kerja</li>
-    </ul>
+  <!-- Pemutar Audio & Video -->
+  <audio id="audioPlayer" controls></audio>
+  <video id="videoPlayer" controls muted loop></video>
 
-    <h2>Testimoni</h2>
-    <div class="testimoni">
-      “Rasa nostalgia tapi tampilannya kekinian. Cocok banget buat hampers dan teman kerja.” <br />– Ayu, Jakarta
-    </div>
+  <!-- Kontrol Tombol SVG -->
+  <div class="controls">
+    <button id="prevBtn">⏮️</button>
+    <button id="playBtn">▶️</button>
+    <button id="pauseBtn">⏸️</button>
+    <button id="nextBtn">⏭️</button>
+  </div>
 
-    <div class="cta">
-      <h3>Chat & Order Sekarang</h3>
-      <a href="https://wa.me/6281234567890" target="_blank">Beli Lewat WhatsApp</a>
-    </div>
-  </section>
+  <!-- Input Pilih File -->
+  <input type="file" id="filePicker" accept="audio/*,video/*" multiple />
+
+  <script>
+    const modeSelect = document.getElementById("modeSelect");
+    const audioPlayer = document.getElementById("audioPlayer");
+    const videoPlayer = document.getElementById("videoPlayer");
+    const filePicker = document.getElementById("filePicker");
+
+    const playBtn = document.getElementById("playBtn");
+    const pauseBtn = document.getElementById("pauseBtn");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+
+    let files = [];
+    let currentIndex = 0;
+    let mode = "audio";
+
+    // Ganti mode audio/video
+    modeSelect.addEventListener("change", () => {
+      mode = modeSelect.value;
+      audioPlayer.style.display = mode === "audio" ? "block" : "none";
+      videoPlayer.style.display = mode === "video" ? "block" : "none";
+      loadCurrent();
+    });
+
+    filePicker.addEventListener("change", (e) => {
+      files = Array.from(e.target.files);
+      currentIndex = 0;
+      loadCurrent();
+    });
+
+    function loadCurrent() {
+      const file = files[currentIndex];
+      if (!file) return;
+
+      const url = URL.createObjectURL(file);
+
+      if (mode === "audio" && file.type.startsWith("audio")) {
+        audioPlayer.src = url;
+        audioPlayer.play();
+        audioPlayer.style.display = "block";
+        videoPlayer.style.display = "none";
+      } else if (mode === "video" && file.type.startsWith("video")) {
+        videoPlayer.src = url;
+        videoPlayer.play();
+        videoPlayer.style.display = "block";
+        audioPlayer.style.display = "none";
+      }
+    }
+
+    playBtn.addEventListener("click", () => {
+      if (mode === "audio") audioPlayer.play();
+      else videoPlayer.play();
+    });
+
+    pauseBtn.addEventListener("click", () => {
+      if (mode === "audio") audioPlayer.pause();
+      else videoPlayer.pause();
+    });
+
+    prevBtn.addEventListener("click", () => {
+      currentIndex = (currentIndex - 1 + files.length) % files.length;
+      loadCurrent();
+    });
+
+    nextBtn.addEventListener("click", () => {
+      currentIndex = (currentIndex + 1) % files.length;
+      loadCurrent();
+    });
+    
+    
+        if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').then(reg => {
+          console.log("SW registered ✅", reg);
+        }).catch(err => {
+          console.error("SW failed ❌", err);
+        });
+      });
+    }
+  </script>
 </body>
 </html>
