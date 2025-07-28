@@ -92,8 +92,6 @@
   <!-- Input Pilih File -->
   <input type="file" id="filePicker" accept="audio/*,video/*" multiple />
 
-<button id="installBtn" style="display:none; margin-top: 20px; padding: 10px 20px; background: #0af; color: white; border: none; border-radius: 8px; cursor: pointer;">
-  📥 Install Aplikasi
 </button>
   <script>
     const modeSelect = document.getElementById("modeSelect");
@@ -162,41 +160,6 @@
       currentIndex = (currentIndex + 1) % files.length;
       loadCurrent();
     });
-    
-
-  let deferredPrompt;
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-
-    // Tampilkan tombol install manual
-    const installBtn = document.createElement('button');
-    installBtn.textContent = 'Install App';
-    installBtn.style.position = 'fixed';
-    installBtn.style.bottom = '20px';
-    installBtn.style.right = '20px';
-    installBtn.style.zIndex = 9999;
-    installBtn.style.padding = '10px';
-    installBtn.style.background = '#00aaff';
-    installBtn.style.color = '#fff';
-    installBtn.style.border = 'none';
-    installBtn.style.borderRadius = '8px';
-    document.body.appendChild(installBtn);
-
-    installBtn.addEventListener('click', () => {
-      installBtn.remove();
-      deferredPrompt.prompt();
-      deferredPrompt.userChoice.then((choiceResult) => {
-        if (choiceResult.outcome === 'accepted') {
-          console.log('PWA Installed');
-        } else {
-          console.log('Install dismissed');
-        }
-        deferredPrompt = null;
-      });
-    });
-  });
-
     
     
   if ('serviceWorker' in navigator) {    
