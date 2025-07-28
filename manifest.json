@@ -1,11 +1,11 @@
 {
-  "name": "MediaPlayer",
-  "short_name": "Player",
-  "description": "Pemutar media ringan & cepat, berbasis PWA",
-  "start_url": "./",
+  "name": "Yuda Music Player",
+  "short_name": "YudaTime",
+  "start_url": "/Test2x/index.html",
+  "scope": "/Test2x/",
   "display": "standalone",
   "background_color": "#000000",
-  "theme_color": "#111111",
+  "theme_color": "#1a1a1a",
   "icons": [
     {
       "src": "assets/icon-192.png",
