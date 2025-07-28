@@ -92,7 +92,7 @@
   <!-- Input Pilih File -->
   <input type="file" id="filePicker" accept="audio/*,video/*" multiple />
 
-</button>
+<button id="installBtn" style="display: none;">Install App</button>
   <script>
     const modeSelect = document.getElementById("modeSelect");
     const audioPlayer = document.getElementById("audioPlayer");
@@ -160,6 +160,31 @@
       currentIndex = (currentIndex + 1) % files.length;
       loadCurrent();
     });
+    
+    
+    
+  let deferredPrompt;
+  const installBtn = document.getElementById('installBtn');
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    installBtn.style.display = 'block';
+
+    installBtn.addEventListener('click', () => {
+      installBtn.style.display = 'none';
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+          console.log('User accepted the A2HS prompt');
+        } else {
+          console.log('User dismissed the A2HS prompt');
+        }
+        deferredPrompt = null;
+      });
+    });
+  });
+
     
     
   if ('serviceWorker' in navigator) {    
