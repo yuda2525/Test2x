@@ -2,8 +2,8 @@ const CACHE_NAME = 'media-cache-v1';
 const FILES_TO_CACHE = [
   './',
   './index.html',
-  './style.css',
-  './app.js',
+  './manifest.json',
+  './sw.js',
   './assets/icon-192.png',
   './assets/icon-512.png'
 ];
