@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />            
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">            
 <!-- Web App Manifest -->            
-<link rel="manifest" href="manifest.json" />            
+<link rel="manifest" href="/Test2x/manifest.json">
             
 <!-- App Icons -->            
 <link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192.png" />            
@@ -12,7 +12,7 @@
             
 <!-- Android Theme -->            
 <meta name="theme-color" content="#000000" />            
-<meta name="mobile-web-app-capable" content="yes" />            
+<meta name="mobile-web-app-capable" content="yes" />          
             
 <!-- iOS support -->            
 <meta name="apple-mobile-web-app-capable" content="yes" />            
@@ -185,15 +185,18 @@
     });
   });
 
-    
-    
-  if ('serviceWorker' in navigator) {    
-    navigator.serviceWorker.register('sw.js')    
-      .then(reg => console.log('✅ Service Worker registered:', reg.scope))    
-      .catch(err => console.error('❌ Service Worker registration failed:', err));    
-  }    
-  
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/Test2x/sw.js', { scope: '/Test2x/' })
+      .then(reg => console.log('SW ready', reg.scope))
+      .catch(err => console.error('SW failed', err));
+  }
+
   
   </script>
 </body>
 </html>
+
+
+
+
