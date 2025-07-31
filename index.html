@@ -229,33 +229,6 @@ input[type="range"] {
   color: #0ff;
 }
 
-#folderPicker {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  opacity: 0;
-  width: 36px;
-  height: 36px;
-  z-index: 10;
-}
-
-label[for="folderPicker"] {
-  position: absolute;
-  top: 110px;
-  left: 30px;
-  width: 36px;
-  height: 36px;
-  background: rgba(0,255,255,0.1);
-  border-radius: 25px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 18px;
-  color: #0ff;
-  backdrop-filter: blur(8px);
-  cursor: pointer;
-  z-index: 5;
-}
 
 #digitalClock {
   position: absolute;
@@ -498,11 +471,7 @@ body.locked {
 </div>
 
     <div id="playerBox">  
-        <!-- File Picker -->
-<!-- Folder Picker Icon -->
-<input type="file" id="folderPicker" webkitdirectory multiple accept="audio/*" />
-<label for="folderPicker">📁</label>
-</label>
+
 <button id="lockScreenBtn" title="Kunci semua kontrol">🔒</button>
 <div id="overlayLock"></div>
     <!-- Volume Control -->
@@ -540,7 +509,8 @@ body.locked {
     Browser tidak mendukung audio.
   </audio>
   </div>
-  
+
+<input type="file" id="fileInput" accept="audio/*">
     <!-- ✅ Now Playing (di bawah audio player) -->
 <div id="nowPlayingBox" style="
   display: flex;
@@ -574,6 +544,7 @@ background: linear-gradient(90deg,
     -webkit-text-fill-color: transparent;
     animation: scrollText 15s linear infinite;
   ">-</span>
+
 
 
 </div>
@@ -1153,7 +1124,7 @@ window.addEventListener("DOMContentLoaded", updateNowPlaying);
 
 window.addEventListener("DOMContentLoaded", () => {
   const player = document.getElementById("audioPlayer");
-  const folderPicker = document.getElementById("folderPicker");
+const fileInput = document.getElementById("fileInput");
 
   ["presetBasicSelect", "presetAdvanceSelect"].forEach(id => {
     const select = document.getElementById(id);
@@ -1166,18 +1137,23 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  if (folderPicker) {
-    folderPicker.addEventListener("change", async e => {
-      const files = e.target.files;
-      if (files.length > 0) {
-        const audioFile = URL.createObjectURL(files[0]);
-        player.src = audioFile;
-        currentFilename = files[0].name
-          .replace(/\.[^/.]+$/, "")
-          .replace(/[_\-]+/g, " ")
-          .replace(/\s+/g, " ")
-          .trim()
-          .replace(/\b\w/g, c => c.toUpperCase());
+
+
+
+if (fileInput) {
+  fileInput.addEventListener("change", async e => {
+    const files = e.target.files;
+    if (files.length > 0) {
+      const audioFile = URL.createObjectURL(files[0]);
+      player.src = audioFile;
+
+      currentFilename = files[0].name
+        .replace(/\.[^/.]+$/, "")       // Hapus ekstensi
+        .replace(/[_\-]+/g, " ")        // Ganti _ atau - jadi spasi
+        .replace(/\s+/g, " ")           // Normalisasi spasi
+        .trim()
+        .replace(/\b\w/g, c => c.toUpperCase()); // Kapital tiap kata
+ 
 
         player.load();
         await audioCtx?.resume();
