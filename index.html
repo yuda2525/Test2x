@@ -1,201 +1,1867 @@
-<!DOCTYPE html>            
-<html lang="id">            
-<head>            
-  <meta charset="UTF-8" />            
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">            
-<!-- Web App Manifest -->            
-<link rel="manifest" href="/Test2x/manifest.json">
-            
-<!-- App Icons -->            
-<link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192.png" />            
-<link rel="icon" type="image/png" sizes="512x512" href="assets/icon-512.png" />            
-            
-<!-- Android Theme -->            
-<meta name="theme-color" content="#000000" />            
-<meta name="mobile-web-app-capable" content="yes" />          
-            
-<!-- iOS support -->            
-<meta name="apple-mobile-web-app-capable" content="yes" />            
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />              
-<meta name="color-scheme" content="dark light">    
-<link rel="apple-touch-icon" href="assets/icon-192.png" />            
-<link rel="apple-touch-startup-image" href="assets/splash-screen.png">        
-  <meta name="apple-mobile-web-app-title" content="MediaPlayer" />
-  <title>Hybrid MP3/MP4 Player</title>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+  <meta name="author" content="Y&Z Studio - Powered by AI & Human Creativity">
+<meta name="copyright" content="© 2025 Y&Z Studio - yudabastard84@gmail.com">
+	<!-- Meta dasar -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#1e1e1e"> <!-- Warna status bar -->
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="My Audio App">
+
+<!-- PWA Manifest -->
+<link rel="manifest" href="manifest.json" />
+<link rel="icon" type="image/png" sizes="192x192" href="192.png" />
+<link rel="apple-touch-icon" href="192.png" />
+
+<!-- SEO -->
+<title>My Audio App - Music & Sound Offline</title>
+<meta name="description" content="Play your favorite audio files offline with rich EQ and player features.">
+
+<!-- OG (untuk share) -->
+<meta property="og:title" content="My Audio App">
+<meta property="og:description" content="A fast, offline-ready audio player PWA. Try now!">
+<meta property="og:image" content="icon-512.png">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://yoursite.com/">
+
+<!-- Optional favicon -->
+<link rel="shortcut icon" href="icon-192.png" type="image/png">
+  <title> Audio Player Final</title>
   <style>
-    body {
-      margin: 0;
-      background: #111;
-      color: white;
-      font-family: sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-    }
-    video, audio {
-      width: 90%;
-      max-width: 500px;
-      margin-top: 20px;
-      display: none;
-      border-radius: 16px;
-      box-shadow: 0 0 12px #0ff4;
-    }
-    .controls {
-      margin-top: 10px;
-      display: flex;
-      gap: 20px;
-      justify-content: center;
-      align-items: center;
-    }
-    button {
-      background: none;
-      border: none;
-      color: white;
-      cursor: pointer;
-    }
-    select {
-      margin-top: 15px;
-      padding: 6px 12px;
-      border-radius: 6px;
-      background: #222;
-      color: white;
-    }
-    input[type="file"] {
-      margin-top: 10px;
-    }
-  </style>
-</head>
-<body>
+:root {
+  --accent-color: #00ffe7;
+  --bg-start: #000510;
+  --bg-end: #001b2d;
+  --glass-bg: rgba(255, 255, 255, 0.04);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-shadow: rgba(0, 255, 255, 0.15);
+}
 
-  <h2>🎧 Hybrid Player</h2>
+* {
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+}
 
-  <!-- Mode Switch -->
-  <select id="modeSelect">
-    <option value="audio">🎵 Mode Audio (MP3)</option>
-    <option value="video">🎥 Mode Video (MP4)</option>
-  </select>
+body, html {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
+  color: var(--accent-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
 
-  <!-- Pemutar Audio & Video -->
-  <audio id="audioPlayer" controls></audio>
-  <video id="videoPlayer" controls muted loop></video>
+h2 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 2em;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #0ff;
+  text-align: center;
+  margin: 12px 0 8px;
+  text-shadow: 0 0 5px #0ff, 0 0 10px #00faff, 0 0 20px #00e1ff, 0 0 30px #00bfff;
+}
 
-  <!-- Kontrol Tombol SVG -->
-  <div class="controls">
-    <button id="prevBtn">⏮️</button>
-    <button id="playBtn">▶️</button>
-    <button id="pauseBtn">⏸️</button>
-    <button id="nextBtn">⏭️</button>
-  </div>
+button, .glassy-btn, .boost-btn {
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.05);
+  color: #fff;
+  font-weight: 600;
+  border-radius: 10px;
+  padding: 6px 14px;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 0 10px rgba(0,255,255,0.1);
+  transition: 0.3s ease;
+  cursor: pointer;
+  font-size: 13px;
+}
 
-  <!-- Input Pilih File -->
-  <input type="file" id="filePicker" accept="audio/*,video/*" multiple />
+button:hover, .boost-btn:hover {
+  box-shadow: 0 0 12px rgba(0,255,255,0.5), 0 0 4px rgba(0,255,255,0.3);
+}
 
-<button id="installBtn" style="display: none;">Install App</button>
-  <script>
-    const modeSelect = document.getElementById("modeSelect");
-    const audioPlayer = document.getElementById("audioPlayer");
-    const videoPlayer = document.getElementById("videoPlayer");
-    const filePicker = document.getElementById("filePicker");
+.status {
+  font-size: 0.75rem;
+  margin-top: 4px;
+}
 
-    const playBtn = document.getElementById("playBtn");
-    const pauseBtn = document.getElementById("pauseBtn");
-    const prevBtn = document.getElementById("prevBtn");
-    const nextBtn = document.getElementById("nextBtn");
+.status.on {
+  color: #6f6;
+  text-shadow: 0 0 5px #6f6;
+}
+.status.off {
+  color: #f66;
+  text-shadow: 0 0 5px #f66;
+}
 
-    let files = [];
-    let currentIndex = 0;
-    let mode = "audio";
+.boost-btn.active {
+  background: #00ffcc;
+  color: black;
+  font-weight: bold;
+  border: 2px solid white;
+}
 
-    // Ganti mode audio/video
-    modeSelect.addEventListener("change", () => {
-      mode = modeSelect.value;
-      audioPlayer.style.display = mode === "audio" ? "block" : "none";
-      videoPlayer.style.display = mode === "video" ? "block" : "none";
-      loadCurrent();
-    });
+.player-container {
+  z-index: 1;
+  width: 95vw;
+  max-width: 880px;
+  padding: 20px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  box-shadow: 0 8px 28px var(--glass-shadow);
+  backdrop-filter: blur(14px) brightness(1.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  overflow-y: auto;
+  max-height: 90vh;
+  transition: all 0.3s ease-in-out;
+}
 
-    filePicker.addEventListener("change", (e) => {
-      files = Array.from(e.target.files);
-      currentIndex = 0;
-      loadCurrent();
-    });
+.now-playing-box {
+  width: 100%;
+  max-width: 460px;
+  font-size: 15px;
+  text-align: center;
+  font-weight: 600;
+  background: rgba(0,255,255,0.07);
+  padding: 8px 14px;
+  margin: 16px 0 20px;
+  color: cyan;
+  border-radius: 10px;
+  backdrop-filter: blur(4px);
+}
 
-    function loadCurrent() {
-      const file = files[currentIndex];
-      if (!file) return;
+@keyframes scrollText {
+  0%   { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
 
-      const url = URL.createObjectURL(file);
+@keyframes scrollText {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
 
-      if (mode === "audio" && file.type.startsWith("audio")) {
-        audioPlayer.src = url;
-        audioPlayer.play();
-        audioPlayer.style.display = "block";
-        videoPlayer.style.display = "none";
-      } else if (mode === "video" && file.type.startsWith("video")) {
-        videoPlayer.src = url;
-        videoPlayer.play();
-        videoPlayer.style.display = "block";
-        audioPlayer.style.display = "none";
-      }
-    }
+audio#audioPlayer {
+  width: 100%;
+  max-width: 600px;
+  height: 40px;
+  background-color: rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  margin: 15px 0;
+}
 
-    playBtn.addEventListener("click", () => {
-      if (mode === "audio") audioPlayer.play();
-      else videoPlayer.play();
-    });
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  width: 100%;
+}
 
-    pauseBtn.addEventListener("click", () => {
-      if (mode === "audio") audioPlayer.pause();
-      else videoPlayer.pause();
-    });
+.row select,
+.row button,
+.row input[type=range],
+select,
+input[type="range"] {
+  accent-color: var(--accent-color);
+  padding: 4px 6px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: #0ff;
+  font-size: 0.9em;
+  cursor: pointer;
+}
 
-    prevBtn.addEventListener("click", () => {
-      currentIndex = (currentIndex - 1 + files.length) % files.length;
-      loadCurrent();
-    });
+#eqContainer {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 0 6px;
+}
 
-    nextBtn.addEventListener("click", () => {
-      currentIndex = (currentIndex + 1) % files.length;
-      loadCurrent();
-    });
-    
-    
-    
-  let deferredPrompt;
-  const installBtn = document.getElementById('installBtn');
+#manual-eq-sliders {
+  display: flex;
+  justify-content: center;
+  align-items: end;
+  flex-wrap: nowrap;
+  gap: 4vw;
+  width: 100%;
+  max-width: 95vw;
+  margin-top: 6px;
+  padding: 0 2vw;
+}
 
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    installBtn.style.display = 'block';
+.eq-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 7.5vw;
+  max-width: 28px;
+  flex: 0 0 auto;
+}
 
-    installBtn.addEventListener('click', () => {
-      installBtn.style.display = 'none';
-      deferredPrompt.prompt();
-      deferredPrompt.userChoice.then((choiceResult) => {
-        if (choiceResult.outcome === 'accepted') {
-          console.log('User accepted the A2HS prompt');
-        } else {
-          console.log('User dismissed the A2HS prompt');
-        }
-        deferredPrompt = null;
-      });
-    });
-  });
+.eq-col span {
+  margin-top: 2px;
+  font-size: 0.6em;
+  color: #0ff;
+}
 
+.eq-slider {
+  writing-mode: bt-lr;
+  -webkit-appearance: slider-vertical;
+  width: 14px;
+  height: 100px;
+  background: transparent;
+  accent-color: #0ff;
+  color: #0ff;
+}
 
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/Test2x/sw.js', { scope: '/Test2x/' })
-      .then(reg => console.log('SW ready', reg.scope))
-      .catch(err => console.error('SW failed', err));
+#folderPicker {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  opacity: 0;
+  width: 36px;
+  height: 36px;
+  z-index: 10;
+}
+
+label[for="folderPicker"] {
+  position: absolute;
+  top: 110px;
+  left: 30px;
+  width: 36px;
+  height: 36px;
+  background: rgba(0,255,255,0.1);
+  border-radius: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+  color: #0ff;
+  backdrop-filter: blur(8px);
+  cursor: pointer;
+  z-index: 5;
+}
+
+#digitalClock {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  font-family: 'Orbitron', 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 900; /*  INI BIKIN TEBAL */
+  letter-spacing: 1px;
+  padding: 6px 14px;
+  border-radius: 12px;
+  text-align: center;
+  z-index: 999;
+  transform: translateX(-50%);
+  color: #ff3c3c;
+  background: rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow:
+    0 0 4px #ff3c3c,
+    0 0 10px rgba(255, 60, 60, 0.5),
+    0 0 16px rgba(0,255,255,0.3);
+  animation: pulseText 1.4s ease-in-out infinite;
+}
+
+@keyframes pulseText {
+  0% {
+    opacity: 0.6;
+    text-shadow:
+      0 0 4px #ff3c3c,
+      0 0 10px rgba(0,255,255,0.4);
+  }
+  100% {
+    color: #ff5f5f;
+    opacity: 1;
+    text-shadow:
+      0 0 6px #ff5f5f,
+      0 0 14px rgba(0,255,255,0.6),
+      0 0 24px rgba(0,255,255,0.9);
+  }
+}
+
+  #digitalClock.red {
+    color: #ff3c3c;
+    text-shadow:
+      0 0 6px #ff3c3c,
+      0 0 12px rgba(255, 60, 60, 0.6);
+    box-shadow:
+      0 0 8px #ff3c3c,
+      0 0 16px rgba(255, 60, 60, 0.4);
   }
 
+  #digitalClock.cyan {
+    color: #00ffff;
+    text-shadow:
+      0 0 6px #00ffff,
+      0 0 14px rgba(0, 255, 255, 0.6);
+    box-shadow:
+      0 0 8px #00ffff,
+      0 0 16px rgba(0, 255, 255, 0.4);
+  }
+
+.footer-animated {
+  width: 100%;
+  text-align: center;
+  padding: 18px 12px;
+  font-size: 0.88rem;
+  color: #cce4f4;
+  background: rgba(18, 22, 34, 0.7);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  position: relative;
+}
+
+.footer-animated .brand {
+  font-weight: 700;
+  background: linear-gradient(90deg, #00ffff, #00e1ff, #6f00ff, #ff00aa, #ff6600, #00ffff);
+  background-size: 400% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: animateText 5s ease-in-out infinite;
+  text-shadow: 0 0 6px rgba(0, 255, 255, 0.3), 0 0 12px rgba(255, 0, 255, 0.15);
+}
+
+.footer-animated a {
+  color: #90e0ef;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.footer-animated a:hover {
+  color: #ffffff;
+  text-shadow: 0 0 6px rgba(0, 255, 255, 0.5);
+}
+
+@keyframes animateText {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+#lockScreenBtn {
+  position: fixed;
+  bottom: 14px;
+  right: 14px;
+  z-index: 99999;
+  padding: 8px 14px;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  background: #111;
+  color: #00ffff;
+  border: none;
+  box-shadow: 0 0 10px rgba(0,255,255,0.4);
+}
+
+#overlayLock {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 94vw;
+  height: 135vh;
+  background: var(--lock-overlay-color, rgba(0, 0, 0, 0.10));
+  z-index: 99998;
+  display: none;
+  pointer-events: all;
+}
+
+body.locked {
+  overflow: hidden;
+}
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
+  .player-container {
+    padding: 12px;
+    border-radius: 16px;
+    max-height: 95vh;
+  }
+
+  .glassy-btn {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+
+  .eq-slider { height: 100px; }
+}
+
+@media (min-width: 768px) {
+  .player-container {
+    padding: 32px;
+    max-width: 960px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+
+  h2 { font-size: 28px; }
+
+  .now-playing-box {
+    font-size: 16px;
+    padding: 12px 20px;
+    grid-column: span 2;
+  }
+
+  .row, audio#audioPlayer { grid-column: span 2; }
+
+  .eq-slider { height: 140px; }
+}
   
-  </script>
+.player-container {
+  transition: all 0.3s ease-in-out;
+}
+  </style>
+</head>
+
+<body>
+	<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+	<!--  Player UI -->
+  <div class="player-container">
+
+<!--  Cuma satu elemen jam -->
+<div id="digitalClock" style="  
+  position: absolute;  
+  top: 10px;  
+  left: 50%;  
+  transform: translateX(-50%);  
+  font-family: 'Inter', sans-serif;  
+  font-size: 13px;  
+  font-weight: 600;  
+  color: #fff;  
+  background: rgba(255,255,255,0.05);  
+  border: 1px solid rgba(255,255,255,0.1);  
+  padding: 4px 12px;  
+  border-radius: 10px;  
+  backdrop-filter: blur(6px);  
+  box-shadow: 0 0 6px rgba(255,255,255,0.2);  
+  z-index: 999;  
+  text-align: center;  
+">  
+  Loading Clock...  
+</div>
+
+  	          <div class="audio-box">
+  	  <h2>MUSIC PLAYER</h2>
+<!-- Preset Selector -->
+<div class="row" style="flex-wrap:wrap; gap:8px">
+  <label for="preset-select"> Equalizer:</label>
+    <section id="presetBasicSelect" style="max-width: 300px; margin: 12px auto; padding: 6px; text-align: center; background: transparent;">
+      <select id="presetBasicSelect"
+        style="padding: 6px 20px; font-size: 12px; border-radius: 6px; min-width: 160px;
+          background: rgba(255,255,255,0.08); backdrop-filter: blur(6px);
+          border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; transition: all 0.2s ease;">
+        <option value="Flat" selected>Flat </option>
+        <option value="Bass Boost"> Bass</option>
+        <option value="Treble Boost">Treble</option>
+        <option value="Rock">Rock</option>
+        <option value="Pop"> Pop</option>
+        <option value="Jazz">Jazz</option>
+        <option value="Dance">Dance</option>
+        <option value="Classic">Classic</option>
+    </select>
+    <section id="preset-advance" style="max-width: 300px; margin: 12px auto; padding: 6px; text-align: center; background: transparent;">
+      <select id="preset-advance" 
+        style="padding: 6px 20px; font-size: 12px; border-radius: 6px; min-width: 160px;
+          background: rgba(255,255,255,0.08); backdrop-filter: blur(6px);
+          border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; transition: all 0.2s ease;">
+        <option value="Flat" selected>Advance OFF</option>
+        <option value="Sub Bass Lift"> Sub Bass Lift</option>
+        <option value="Vocal Presence"> Vocal Presence</option>
+        <option value="Warm & Wide">Warm & Wide</option>
+        <option value="Treble Sparkle">Treble Sparkle</option>
+        <option value="Hi-Fi Wide Range"> Hi-Fi Wide</option>
+    </select>
+  </section>
+</div>
+</div>
+
+    <div id="playerBox">  
+        <!-- File Picker -->
+<!-- Folder Picker Icon -->
+<input type="file" id="folderPicker" webkitdirectory multiple accept="audio/*" />
+<label for="folderPicker">📁</label>
+</label>
+<button id="lockScreenBtn" title="Kunci semua kontrol">🔒</button>
+<div id="overlayLock"></div>
+    <!-- Volume Control -->
+    <div class="row">
+<input type="range" id="volumeRange" min="0" max="2.5" value="1" step="0.01" />
+<span id="gain-info"> 1.00x</span>
+    </div>
+    
+<!-- Manual EQ Sliders -->	
+<div id="manual-eq-sliders" style="display:grid; grid-template-columns: repeat(12, 1fr); gap: 1px; margin-top:12px;">
+  <div class="eq-col"><input id="eqSlider0"  class="eq-slider" type="range" min="-12" max="12" value="0" /><span>32Hz</span></div>
+  <div class="eq-col"><input id="eqSlider1"  class="eq-slider" type="range" min="-12" max="12" value="0" /><span>64Hz</span></div>
+  <div class="eq-col"><input id="eqSlider2"  class="eq-slider" type="range" min="-12" max="12" value="0" /><span>125Hz</span></div>
+  <div class="eq-col"><input id="eqSlider3"  class="eq-slider" type="range" min="-12" max="12" value="0" /><span>250Hz</span></div>
+  <div class="eq-col"><input id="eqSlider4"  class="eq-slider" type="range" min="-12" max="12" value="0" /><span>500Hz</span></div>
+  <div class="eq-col"><input id="eqSlider5"  class="eq-slider" type="range" min="-12" max="12" value="0" /><span>1kHz</span></div>
+  <div class="eq-col"><input id="eqSlider6"  class="eq-slider" type="range" min="-12" max="12" value="0" /><span>2kHz</span></div>
+  <div class="eq-col"><input id="eqSlider7"  class="eq-slider" type="range" min="-12" max="12" value="0" /><span>4kHz</span></div>
+  <div class="eq-col"><input id="eqSlider8"  class="eq-slider" type="range" min="-12" max="12" value="0" /><span>8kHz</span></div>
+  <div class="eq-col"><input id="eqSlider9"  class="eq-slider" type="range" min="-12" max="12" value="0" /><span>12kHz</span></div>
+  <div class="eq-col"><input id="eqSlider10" class="eq-slider" type="range" min="-12" max="12" value="0" /><span>16kHz</span></div>
+  <div class="eq-col"><input id="eqSlider11" class="eq-slider" type="range" min="-12" max="12" value="0" /><span>20kHz</span></div>
+  </div>
+</section>
+
+<!-- ✅ Audio Player -->
+<div style="text-align: center; margin-bottom: 12px;">
+  <audio id="audioPlayer" controls style="
+    width: 100%;
+    max-width: 360px;
+    border-radius: 10px;
+    outline: none;
+  ">
+    <source src="lagu.mp3" type="audio/mp3" />
+    Browser tidak mendukung audio.
+  </audio>
+  </div>
+  
+    <!-- ✅ Now Playing (di bawah audio player) -->
+<div id="nowPlayingBox" style="
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 auto 16px;
+  padding: 8px 16px;
+  width: fit-content;
+  max-width: 90%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+">
+  <span id="trackName" style="
+    display: inline-block;
+    white-space: nowrap;
+    font-weight: bold;
+    font-size: 13px;
+background: linear-gradient(90deg, 
+  #00faff, 
+  #ff00e0, 
+  #00ff91, 
+  #ffd500, 
+  #ff00e0, 
+  #00faff
+);
+    background-size: 100% auto;
+    color: transparent;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: scrollText 15s linear infinite;
+  ">-</span>
+
+
+</div>
+<div class="row" id="boosterControls" style="flex-direction: column; align-items: center; gap: 10px;">
+  <select id="presetSelect" style="
+    padding: 6px 20px;
+    font-size: 12px;
+    border-radius: 6px;
+    min-width: 160px;
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.2s ease;">
+<option value="standby">Booster Mode</option>
+    <option value="Soft">Soft</option>
+    <option value="Normal">Normal</option>
+    <option value="Hard">Hard</option>
+    <option value="Extreme">Extreme</option>
+  </select>
+
+  <div class="row" style="justify-content: center; gap: 12px;">
+<button id="boostLow" class="boost-btn">LOW</button>
+<button id="boostMid" class="boost-btn">MID</button>
+<button id="boostHigh" class="boost-btn">HIGH</button>
+  </div>
+</div>
+        
+    </div>
+     <!-- BlendToggleBtn -->
+    <div class="row" style="flex-wrap:wrap; gap:2px">
+    	      	      <div id="blendToggleBtn"
+        style="padding: 6px 20px; font-size: 12px; border-radius: 20px; min-width: 160px;
+          background: rgba(255,255,255,0.08); backdrop-filter: blur(6px);
+          border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; transition: all 0.2s ease;">
+      <button id="blendToggleBtn">Blend</button>
+                <span id="blendStatus" class="status off">OFF</span>
+          </div>
+      <input type="range" id="blendRatio" min="0" max="1" step="0.05" value="0.5" />
+      <span id="blendValue">0.50x</span>
+    </div>
+    <div class="row" style="flex-wrap:wrap; gap:2px">
+      <select id="presetA">
+        <option value="Flat" >Flat </option>
+        <option value="Bass Boost"> Bass</option>
+        <option value="Treble Boost">Treble</option>
+        <option value="Rock">Rock</option>
+        <option value="Pop"> Pop</option>
+        <option value="Jazz">Jazz</option>
+        <option value="Dance">Dance</option>
+        <option value="Classic">Classic</option>
+    </select>
+      <select id="presetB">
+        <option value="Sub Bass Lift">Sub Bass Lift</option>
+        <option value="Vocal Presence">Vocal Presence</option>
+        <option value="Warm & Wide">Warm & Wide</option>
+        <option value="Treble Sparkle">Treble Sparkle</option>
+        <option value="Hi-Fi Wide Range">Hi-Fi Wide Range</option>
+      </select>
+          </div>
+      
+<!-- Stereo Toggle -->
+<div class="row" style="flex-wrap: wrap; gap: 2px">
+  <div id="StereoToggleBtn"
+    style="padding: 6px 20px; font-size: 12px; border-radius: 20px; min-width: 160px;
+    background: rgba(255,255,255,0.08); backdrop-filter: blur(6px);
+    border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; transition: all 0.2s ease;">
+    
+    <button id="stereoToggleBtn">Stereo</button>
+    <span id="StereoStatus" class="status off">OFF</span>
+  </div>
+
+
+<!-- Tombol Reset: Nuclear Style -->
+<button id="resetBtn" title="Reset Semua" style="
+  font-size: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #ffffff;
+  text-shadow: 0 0 6px #ffffff, 0 0 12px #bbbbbb, 0 0 24px #ffffff;
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 99;
+  transition: transform 0.2s ease;
+" onclick="location.reload()">
+  ☢️
+</button>
+
+
+<pre id="testLog" style="
+  resize: both;                 /* ⬅️ Bisa ditarik manual dari pojok */
+  overflow: auto;               /* ⬅️ Scroll ke kanan & bawah */
+  min-width: 260px;
+  min-height: 120px;
+  max-width: 100%;
+  background: rgba(0,0,0,0.2);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: #0ff;
+  padding: 12px;
+  font-size: 12px;
+  line-height: 1.4;
+  border-radius: 10px;
+  white-space: pre;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 0 10px rgba(0,255,255,0.2);
+">Log mesin belum dijalankan...</pre>
+
+
+<canvas id="waveformCanvas" style="width: 100%; height: 100px;"></canvas>
+
+<footer class="footer-animated">
+  © 2025 <span class="brand">Y&amp;Z Studio</span> · Powered by AI &amp; Human Creativity
+  <br>
+  <a href="mailto:yudabastard84@gmail.com" class="brand">yudabastard84@gmail.com</a>
+</footer>
+
+
+	
+  <!-- isi jam analog kamu -->
+<div id="mini-clock" style="
+  position:fixed;
+  top:20px; left:20px;
+  width:140px; height:140px;
+  border-radius:50%;
+  background:rgba(255,255,255,0.04);
+  backdrop-filter:blur(10px);
+  border:2px solid rgba(0,255,255,0.2);
+  box-shadow:0 4px 12px rgba(0,255,255,0.1), inset 0 0 8px rgba(255,255,255,0.05);
+  touch-action:none;
+  cursor:grab;
+  z-index:9999;
+  font-family:'Cinzel Decorative', cursive;
+  overflow:hidden;
+">
+	
+  <!-- ✅ Logo / Brand -->
+  <div style="
+    position:absolute;
+    top:26px;
+    left:50%;
+    transform:translateX(-50%);
+    font-size:14px;
+    color:#5e503f;
+    font-weight:bold;
+    text-shadow:0 0 3px #fff2;
+    font-family:'Cinzel Decorative', cursive;
+  ">
+    Y&Z®
+  </div>
+
+  <!-- Center -->
+  <div style="position:absolute; width:6px; height:6px; background:white; border:1px solid #000; border-radius:50%; top:50%; left:50%; transform:translate(-50%, -50%); z-index:10;"></div>
+
+  <!-- Hands -->
+  <div id="mini-hour" style="position:absolute; top:50%; left:50%; width:3px; height:35px; background:#0ff; box-shadow:0 0 4px #0ff; border-radius:2px; transform-origin:bottom center; transform:translate(-50%, -100%) rotate(0deg); z-index:2;"></div>
+  <div id="mini-minute" style="position:absolute; top:50%; left:50%; width:2px; height:48px; background:#0ff; box-shadow:0 0 4px #0ff; border-radius:2px; transform-origin:bottom center; transform:translate(-50%, -100%) rotate(0deg); z-index:1;"></div>
+
+  <!-- Angka Romawi -->
+  <div id="mini-numerals"></div>
+</div>
+</div>
+<script>  
+window.addEventListener("error", e => console.error("❌ Global Error:", e.message));
+
+// ✅ AudioContext & Graph Setup
+const frequencies = [32, 64, 125, 250, 500, 1000, 2000, 4000, 8000, 12000, 16000, 20000];
+
+// 🌐 Global Audio Components
+let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+let player, sourceNode, gainNode, subwoofer;
+let enhancer = audioCtx.createBiquadFilter();
+let compressor = audioCtx.createDynamicsCompressor();
+let clarity, agcGainNode, agcLimiter;
+let loudnessLow, loudnessHigh;
+let audioGraphInitialized = false;
+let stereoPanner;
+let lastAudioNode; // akan disambungkan ke stereo toggle
+let stereoToggleState = false; // default OFF
+let currentFilename = "-";
+
+let lastAppliedPreset = "Flat";
+let lastBlendState = null;
+
+let lastManualPreset = "Flat";
+let blendActive = false;
+let boosterActive = false;
+let stereoActive = false;
+
+let boosterBand = null; // "LOW", "MID", "HIGH", or null
+let boosterAmount = 2;  // default booster gain
+
+let clarityGain, deEsser;
+let toneBias, ambient;
+
+let presetFromDynamic = false;
+let waveformActive = true;
+
+let boosterMode = "standby";
+let lastEnhancer = 2.5;
+let lastCompressor = -24;
+
+window.clarityGain = clarityGain;
+
+let lastEQ = new Array(12).fill(0); // agar selalu sync sama slider dan booster
+
+let dynamicAIEnabled = true;
+
+
+//  EQ Filters
+let eqFilters = frequencies.map(freq => {
+  const filter = audioCtx.createBiquadFilter();
+  filter.type = "peaking";
+  filter.frequency.value = freq;
+  filter.Q.value = 1.0;
+  filter.gain.value = 0;
+  return filter;
+});
+
+// 1. Pisahkan basic dan advance
+const basicPresets = {
+  "Flat":        { eq: [0,0,0,0,0,0,0,0,0,0,0,0], enhancer: 0, compressor: -24 },
+  "Bass Boost":  { eq: [6,6,5,4,2,0,-2,-4,-5,-6,-6,-6], enhancer: 1, compressor: -18 },
+  "Treble Boost":{ eq: [-6,-6,-5,-3,-1,0,2,4,6,6,6,6], enhancer: 6, compressor: -16 },
+  "Rock":        { eq: [5,4,3,2,0,-2,1,3,4,5,4,3], enhancer: 3, compressor: -20 },
+  "Pop":         { eq: [3,2,1,1,2,3,3,4,3,2,1,0], enhancer: 3, compressor: -17 },
+  "Jazz":        { eq: [2,2,1,1,1,2,3,2,2,1,1,0], enhancer: 3, compressor: -21 },
+  "Classic":     { eq: [1,1,0,0,1,2,3,3,2,1,0,-1], enhancer: 2, compressor: -23 },
+  "Dance":       { eq: [5,5,4,3,2,1,2,4,5,5,5,4], enhancer: 5, compressor: -14 }
+};
+
+const advancePresets = {
+  "Sub Bass Lift":     { eq: [6,6,6,5,3,1,-2,-4,-5,-6,-6,-6], enhancer: 1, compressor: -12 },
+  "Vocal Presence":    { eq: [0,0,0,1,2,3,4,6,5,3,1,0], enhancer: 4, compressor: -15 },
+  "Treble Sparkle":    { eq: [-3,-3,-2,-1,0,2,3,5,6,6,6,6], enhancer: 6, compressor: -10 },
+  "Hi-Fi Wide Range":  { eq: [2,2,2,1,1,1,2,3,3,2,2,1], enhancer: 5, compressor: -19 },
+  "Warm & Wide":       { eq: [2,2,2,1,1,1,2,2,3,3,2,1], enhancer: 3, compressor: -20 }
+};
+
+
+// ✅ Gabungkan semua preset
+const allPresets = {
+  ...basicPresets,
+  ...advancePresets
+};
+
+// ✅ Booster Map
+const bandMap = {
+  LOW: [0, 1, 2, 3],
+  MID: [4, 5, 6, 7],
+  HIGH: [8, 9, 10, 11]
+};
+
+// ✅ Apply booster per band
+function applyBoosterToBand(index, baseGain) {
+  const target = bandMap[boosterBand] || [];
+  return target.includes(index) ? baseGain + boosterAmount : baseGain;
+}
+
+// ✅ Render final EQ ke filter dan slider
+function renderEQ() {
+  if (!eqFilters || !lastEQ.length) return;
+
+  lastEQ.forEach((gain, i) => {
+    const boosted = boosterMode !== "standby" ? applyBoosterToBand(i, gain) : gain;
+    eqFilters[i].gain.setTargetAtTime(boosted, audioCtx.currentTime, 0.02);
+
+    const slider = document.getElementById(`eqSlider${i}`);
+    if (slider) slider.value = boosted;
+  });
+}
+
+// ✅ Tampilkan tombol booster aktif
+function highlightBoosterButtons(active) {
+  ["LOW", "MID", "HIGH"].forEach(b => {
+    const btn = document.getElementById("boost" + b);
+    if (btn) btn.classList.toggle("active", b === active);
+  });
+}
+
+// ✅ Terapkan preset (object atau array)
+function applyPreset(name) {
+  const preset = allPresets[name];
+  if (!preset || !eqFilters.length) return;
+
+  if (Array.isArray(preset)) {
+    lastEQ = [...preset];
+    lastEnhancer = 2.5;
+    lastCompressor = -24;
+  } else {
+    lastEQ = [...preset.eq];
+    lastEnhancer = preset.enhancer ?? 2.5;
+    lastCompressor = preset.compressor ?? -24;
+  }
+
+  renderEQ();
+
+  if (enhancer)
+    enhancer.gain.setTargetAtTime(lastEnhancer, audioCtx.currentTime, 0.02);
+
+  if (compressor) {
+    compressor.threshold.setTargetAtTime(lastCompressor, audioCtx.currentTime, 0.02);
+    compressor.ratio.setTargetAtTime(6, audioCtx.currentTime, 0.02);
+  }
+}
+
+// ✅ RESET SEMUA EQ
+function resetAllEQ() {
+  lastEQ = Array(12).fill(0);
+  blendActive = false;
+  boosterBand = null;
+  boosterAmount = 0;
+  boosterMode = "standby";
+  lastManualPreset = null;
+  highlightBoosterButtons(null);
+  renderEQ();
+}
+  
+function setupAudioGraph(player, presetName = "beningStable") {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+  // 🎚️ Global Default Parameter
+  const p = {
+    clarityFreq: 3600, clarityQ: 0.95, clarityGain: 2.8,
+    enhancerFreq: 6500, enhancerGain: 2.5,
+    ambientFreq: 11000, ambientQ: 0.7,
+    subGain: 6.2,
+    agcThresh: -9, agcRatio: 8,
+    compThresh: -18, compRatio: 3.2,
+    gainOut: 0.82
+  };
+
+  // 🎛️ EQ Filters 12-Band
+  eqFilters = frequencies.map(freq => {
+    const f = audioCtx.createBiquadFilter();
+    f.type = "peaking";
+    f.frequency.value = freq;
+    f.Q.value = 1;
+    f.gain.value = 0;
+    return f;
+  });
+
+  // 🔊 FX Nodes
+  clarity = audioCtx.createBiquadFilter();
+  clarity.type = "bandpass";
+  clarity.frequency.value = p.clarityFreq;
+  clarity.Q.value = p.clarityQ;
+  clarity.gain.value = p.clarityGain;
+
+  clarityGain = audioCtx.createGain();
+  clarityGain.gain.value = 0.65;
+
+  enhancer = audioCtx.createBiquadFilter();
+  enhancer.type = "highshelf";
+  enhancer.frequency.value = p.enhancerFreq;
+  enhancer.gain.value = p.enhancerGain;
+
+  loudnessLow = audioCtx.createBiquadFilter();
+  loudnessLow.type = "lowshelf";
+  loudnessLow.frequency.value = 150;
+  loudnessLow.gain.value = 2;
+
+  loudnessHigh = audioCtx.createBiquadFilter();
+  loudnessHigh.type = "highshelf";
+  loudnessHigh.frequency.value = 6000;
+  loudnessHigh.gain.value = 3.5;
+
+  subwoofer = audioCtx.createBiquadFilter();
+  subwoofer.type = "lowshelf";
+  subwoofer.frequency.value = 80;
+  subwoofer.gain.value = p.subGain;
+
+  deEsser = audioCtx.createBiquadFilter();
+  deEsser.type = "peaking";
+  deEsser.frequency.value = 7900;
+  deEsser.Q.value = 3;
+  deEsser.gain.value = -6;
+
+  ambient = audioCtx.createBiquadFilter();
+  ambient.type = "lowpass";
+  ambient.frequency.value = p.ambientFreq;
+  ambient.Q.value = p.ambientQ;
+
+  toneBias = audioCtx.createBiquadFilter();
+  toneBias.type = "peaking";
+  toneBias.frequency.value = 1200;
+  toneBias.Q.value = 1;
+  toneBias.gain.value = 1.6;
+
+  // ⚙️ Dynamics
+  compressor = audioCtx.createDynamicsCompressor();
+  compressor.threshold.value = p.compThresh;
+  compressor.ratio.value = p.compRatio;
+
+  agcLimiter = audioCtx.createDynamicsCompressor();
+  agcLimiter.threshold.value = p.agcThresh;
+  agcLimiter.knee.value = 8;
+  agcLimiter.ratio.value = p.agcRatio;
+  agcLimiter.attack.value = 0.004;
+  agcLimiter.release.value = 0.3;
+
+  softLimiter = audioCtx.createDynamicsCompressor();
+  softLimiter.threshold.value = -6;
+  softLimiter.knee.value = 6;
+  softLimiter.ratio.value = 4.5;
+  softLimiter.attack.value = 0.008;
+  softLimiter.release.value = 0.22;
+
+  peakLimiter = audioCtx.createDynamicsCompressor();
+  peakLimiter.threshold.value = -2;
+  peakLimiter.knee.value = 0;
+  peakLimiter.ratio.value = 20;
+  peakLimiter.attack.value = 0.002;
+  peakLimiter.release.value = 0.1;
+
+  // 🔉 Output Chain
+  gainNode = audioCtx.createGain();
+  gainNode.gain.value = p.gainOut;
+
+  analyser = audioCtx.createAnalyser();
+  analyser.fftSize = 2048;
+
+  stereoPanner = audioCtx.createStereoPanner();
+  stereoPanner.pan.value = 0;
+
+  // 🎧 Source
+  try {
+    if (sourceNode) sourceNode.disconnect();
+    sourceNode = audioCtx.createMediaElementSource(player);
+  } catch (e) {
+    console.warn("❌ Source Error:", e.message);
+    return;
+  }
+
+  // 🔗 Build Main Chain: EQ → FX → Compressor → Limiter → Gain
+  let main = eqFilters.reduce((chain, filter) => (chain.connect(filter), filter), sourceNode);
+
+  [subwoofer, loudnessLow, toneBias, enhancer, loudnessHigh, deEsser, ambient].forEach(node => {
+    main.connect(node);
+    main = node;
+  });
+
+  main.connect(compressor);
+  compressor.connect(agcLimiter);
+  agcLimiter.connect(softLimiter);
+  softLimiter.connect(peakLimiter);
+  peakLimiter.connect(analyser);
+  analyser.connect(gainNode);
+
+  // 🎚️ Output Routing
+  lastAudioNode = gainNode;
+  if (stereoToggleState && stereoPanner) {
+    gainNode.connect(stereoPanner);
+    stereoPanner.connect(audioCtx.destination);
+    startAutoPan?.(); // optional
+  } else {
+    gainNode.connect(audioCtx.destination);
+  }
+
+  // ➕ Parallel Clarity Inject
+  sourceNode.connect(clarity);
+  clarity.connect(clarityGain);
+  clarityGain.connect(compressor); // clarity paralel → langsung ke compressor
+
+  // 🌊 Analyzer Visualizer
+  requestAnimationFrame(() => drawWaveform(analyser));
+
+  // 🧠 Load Preset (Default or Last)
+  applyPreset(lastManualPreset || "Flat");
+}
+
+function drawWaveform(analyser) {
+  const canvas = document.getElementById("waveformCanvas");
+  const ctx = canvas.getContext("2d");
+
+  canvas.width = canvas.offsetWidth;
+  canvas.height = 140;
+
+  const data = new Uint8Array(analyser.fftSize);
+  let hue = 0;
+
+  function render() {
+    requestAnimationFrame(render);
+    analyser.getByteTimeDomainData(data);
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const mid = canvas.height / 2;
+    const slice = canvas.width / data.length;
+    const points = [];
+    let x = 0;
+
+    const grad = ctx.createLinearGradient(0, 0, canvas.width, 0);
+    for (let i = 0; i <= 1; i += 0.2) {
+      grad.addColorStop(i, `hsl(${(hue + i * 360) % 360}, 100%, 60%)`);
+    }
+    hue = (hue + 1.5) % 360;
+
+    // 🔁 Simpan titik waveform real (ATAS)
+    for (let i = 0; i < data.length; i++) {
+      let v = (data[i] - 128) / 128;
+      if (Math.abs(v) < 0.015) v = 0;
+      const boost = Math.sign(v) * Math.pow(Math.abs(v), 2.2);
+      const y = mid - boost * canvas.height * 0.35;
+      points.push({ x, y });
+      x += slice;
+    }
+
+    // ✏️ Gambar waveform atas (REAL)
+    ctx.beginPath();
+    ctx.moveTo(points[0].x, points[0].y);
+    for (let i = 1; i < points.length; i++) {
+      ctx.lineTo(points[i].x, points[i].y);
+    }
+    ctx.strokeStyle = grad;
+    ctx.lineWidth = 2.2;
+    ctx.shadowColor = grad;
+    ctx.shadowBlur = 25;
+    ctx.stroke();
+
+    // 🪞 Gambar mirror ke bawah dari atas
+    ctx.save();
+    ctx.translate(0, mid * 2); // pindah ke bawah tengah
+    ctx.scale(1, -1);          // flip vertikal
+    ctx.globalAlpha = 0.15;    // transparan dikit
+    ctx.filter = "blur(3px)";
+
+    ctx.beginPath();
+    ctx.moveTo(points[0].x, points[0].y);
+    for (let i = 1; i < points.length; i++) {
+      ctx.lineTo(points[i].x, points[i].y);
+    }
+    ctx.stroke();
+    ctx.restore();
+
+    ctx.globalAlpha = 1;
+    ctx.filter = "none";
+  }
+
+  render();
+}
+
+function formatTime(seconds) {
+  if (isNaN(seconds)) return "--:--";
+  const min = Math.floor(seconds / 60);
+  const sec = Math.floor(seconds % 60).toString().padStart(2, "0");
+  return `${min}:${sec}`;
+}
+
+function formatTime(seconds) {
+  if (isNaN(seconds)) return "--:--";
+  const min = Math.floor(seconds / 60);
+  const sec = Math.floor(seconds % 60).toString().padStart(2, "0");
+  return `${min}:${sec}`;
+}
+
+function updateNowPlaying() {
+  const player = document.getElementById("audioPlayer");
+  const nowPlaying = document.getElementById("trackName");
+  const currentTime = document.getElementById("currentTime");
+  const durationTime = document.getElementById("durationTime");
+
+  setInterval(() => {
+    if (player && player.readyState >= 1) {
+      nowPlaying.textContent = currentFilename;
+
+      if (currentTime && durationTime) {
+        currentTime.textContent = formatTime(player.currentTime);
+        durationTime.textContent = formatTime(player.duration);
+      }
+    }
+  }, 500);
+}
+
+window.addEventListener("DOMContentLoaded", updateNowPlaying);
+
+window.addEventListener("DOMContentLoaded", () => {
+  const player = document.getElementById("audioPlayer");
+  const folderPicker = document.getElementById("folderPicker");
+
+  ["presetBasicSelect", "presetAdvanceSelect"].forEach(id => {
+    const select = document.getElementById(id);
+    if (select) {
+      select.addEventListener("change", e => {
+        const selected = e.target.value;
+        const source = (id === "presetBasicSelect") ? "basic" : "advance";
+        onManualPresetChange(selected, source);
+      });
+    }
+  });
+
+  if (folderPicker) {
+    folderPicker.addEventListener("change", async e => {
+      const files = e.target.files;
+      if (files.length > 0) {
+        const audioFile = URL.createObjectURL(files[0]);
+        player.src = audioFile;
+        currentFilename = files[0].name
+          .replace(/\.[^/.]+$/, "")
+          .replace(/[_\-]+/g, " ")
+          .replace(/\s+/g, " ")
+          .trim()
+          .replace(/\b\w/g, c => c.toUpperCase());
+
+        player.load();
+        await audioCtx?.resume();
+        player.play().catch(err => console.warn("🎵 Play failed:", err.message));
+
+        const basicVal = document.getElementById("presetBasicSelect")?.value;
+        const advanceVal = document.getElementById("presetAdvanceSelect")?.value;
+
+        if (basicVal && basicVal !== "Flat") {
+          onManualPresetChange(basicVal, "basic");
+        } else if (advanceVal && advanceVal !== "Flat") {
+          onManualPresetChange(advanceVal, "advance");
+        } else {
+          applyPreset("Flat");
+        }
+      }
+    });
+  }
+
+
+//  Manual EQ Sliders Binding
+frequencies.forEach((freq, i) => {
+  const slider = document.getElementById(`eqSlider${i}`);
+  if (slider) {
+    slider.addEventListener("input", () => {
+      const gain = parseFloat(slider.value);
+      if (eqFilters[i]) {
+        eqFilters[i].gain.setTargetAtTime(gain, audioCtx.currentTime, 0.02);
+      }
+
+      // ✅ update lastEQ biar booster tau kondisi terbaru
+      if (lastEQ.length === 12) {
+        lastEQ[i] = gain;
+      }
+    });
+  }
+});
+
+player.addEventListener("play", async () => {
+  if (!audioCtx || audioCtx.state === "closed") {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  await audioCtx.resume();
+
+  if (!audioGraphInitialized) {
+    setupAudioGraph(player); // buat ulang node
+    audioGraphInitialized = true;
+
+    applyPreset(lastManualPreset || "Flat"); // ⬅️ fix di sini
+  }
+});
+
+  updateNowPlaying();
+  updateClock();
+});
+
+function updateClock() {
+  const clock = document.getElementById("digitalClock");
+  if (!clock) return;
+
+  const now = new Date();
+  const days = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+  const months = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+
+  const day = days[now.getDay()];
+  const date = now.getDate();
+  const month = months[now.getMonth()];
+  const year = now.getFullYear();
+
+  // Format: YYYY-MM-DD
+  const todayKey = `${year}-${(now.getMonth()+1).toString().padStart(2, '0')}-${date.toString().padStart(2, '0')}`;
+
+  // Contoh libur nasional (manual list)
+  const holidays = {
+    "2025-01-01": "Tahun Baru Masehi",
+    "2025-04-18": "Wafat Isa Almasih",
+    "2025-05-01": "Hari Buruh",
+    "2025-05-29": "Kenaikan Isa Almasih",
+    "2025-06-01": "Hari Lahir Pancasila",
+    "2025-06-06": "Hari Raya Idul Adha",
+    "2025-07-17": "Tahun Baru Islam",
+    "2025-08-17": "Hari Kemerdekaan RI",
+    "2025-12-25": "Hari Natal"
+    // Tambahkan tanggal lain jika perlu
+  };
+
+  const holidayNote = holidays[todayKey] ? ` - ${holidays[todayKey]} (Libur Nasional)` : "";
+
+  // Tampilkan
+  clock.textContent = `${day}, ${date} ${month} ${year}${holidayNote}`;
+}
+
+setInterval(updateClock, 1000);
+document.addEventListener("DOMContentLoaded", updateClock);
+
+document.addEventListener("DOMContentLoaded", () => {  
+  const btn = document.getElementById("testEngineBtn");  
+  
+const volumeSlider = document.getElementById("volumeRange");  
+if (volumeSlider) {  
+  volumeSlider.addEventListener("input", () => {  
+    const value = parseFloat(volumeSlider.value);  
+    if (gainNode) {  
+      gainNode.gain.setTargetAtTime(value, audioCtx.currentTime, 0.02);  
+    }  
+    
+    const info = document.getElementById("gain-info");  
+    if (info) {  
+      info.textContent = ` ${value.toFixed(2)}x`;  
+    }  
+  });  
+}  
+  
+// ✅ Blend dua preset (array or object)
+function blendPresets(p1, p2, ratio) {
+  const a = allPresets[p1];
+  const b = allPresets[p2];
+  if (!a || !b || !eqFilters.length) return;
+
+  const eqA = Array.isArray(a) ? a : a.eq;
+  const eqB = Array.isArray(b) ? b : b.eq;
+
+  lastEQ = eqA.map((gainA, i) => gainA * (1 - ratio) + eqB[i] * ratio);
+  renderEQ();
+}
+
+// ✅ DOM Ready Event
+window.addEventListener("DOMContentLoaded", () => {
+  const presetBasicSelect = document.getElementById("presetBasicSelect");
+  const presetAdvanceSelect = document.getElementById("presetAdvanceSelect");
+  const presetA = document.getElementById("presetA");
+  const presetB = document.getElementById("presetB");
+  const blendRatio = document.getElementById("blendRatio");
+  const blendValue = document.getElementById("blendValue");
+  const blendStatus = document.getElementById("blendStatus");
+  const blendToggleBtn = document.getElementById("blendToggleBtn");
+
+  function toggleBlend(isOn) {
+    blendActive = isOn;
+    if (!blendStatus) return;
+    blendStatus.textContent = isOn ? "ON" : "OFF";
+    blendStatus.classList.toggle("on", isOn);
+    blendStatus.classList.toggle("off", !isOn);
+
+    if (isOn) {
+      const a = presetA.value;
+      const b = presetB.value;
+      const ratio = parseFloat(blendRatio.value);
+
+      if (a === b) {
+        alert("❌ Blend tidak boleh preset yang sama");
+        resetAllEQ();
+        return;
+      }
+
+      if (!a || !b) {
+        alert("❌ Preset belum dipilih untuk blend");
+        resetAllEQ();
+        return;
+      }
+
+      blendPresets(a, b, ratio);
+    } else {
+      if (lastManualPreset) {
+        applyPreset(lastManualPreset);
+      } else {
+        resetAllEQ();
+      }
+    }
+  }
+
+  function onManualPresetChange(name) {
+    if (blendActive) {
+      console.warn("❌ Ganti preset saat blend aktif = Off by Accident");
+      resetAllEQ();
+      return;
+    }
+
+    lastManualPreset = name;
+    applyPreset(name);
+  }
+
+  function onBlendSelectionChanged() {
+    if (blendActive) {
+      console.warn("❌ Ganti preset dalam blend = Off by Accident");
+      resetAllEQ();
+    }
+  }
+
+  // 🔁 Event bindings
+  if (presetBasicSelect) {
+    presetBasicSelect.addEventListener("change", e => onManualPresetChange(e.target.value));
+  }
+
+  if (presetAdvanceSelect) {
+    presetAdvanceSelect.addEventListener("change", e => onManualPresetChange(e.target.value));
+  }
+
+  if (presetA) presetA.addEventListener("change", onBlendSelectionChanged);
+  if (presetB) presetB.addEventListener("change", onBlendSelectionChanged);
+
+  if (blendRatio) {
+    blendRatio.addEventListener("input", () => {
+      const val = parseFloat(blendRatio.value);
+      if (blendValue) blendValue.textContent = `${val.toFixed(2)}x`;
+      if (blendActive) {
+        blendPresets(presetA.value, presetB.value, val);
+      }
+    });
+  }
+
+  if (blendToggleBtn) {
+    blendToggleBtn.addEventListener("click", () => {
+      toggleBlend(!blendActive);
+    });
+  }
+});
+
+
+  //  Stereo Toggle
+let stereoToggleState = false;
+let stereoPanner = audioCtx.createStereoPanner(); //  Global scope
+
+const stereoBtn = document.getElementById("StereoToggleBtn");
+const stereoStatus = document.getElementById("StereoStatus");
+
+if (stereoBtn && stereoStatus) {
+  stereoBtn.addEventListener("click", () => {
+    stereoToggleState = !stereoToggleState;
+    stereoStatus.textContent = stereoToggleState ? "ON" : "OFF";
+    stereoStatus.classList.toggle("on", stereoToggleState);
+    stereoStatus.classList.toggle("off", !stereoToggleState);
+
+    try {
+      // Putuskan sambungan lama
+      if (lastAudioNode) lastAudioNode.disconnect();
+      if (stereoPanner) stereoPanner.disconnect();
+
+      if (stereoToggleState) {
+        // Aktifkan stereo dynamic
+        lastAudioNode.connect(stereoPanner);
+        stereoPanner.connect(audioCtx.destination);
+
+        // Atur pan default 0 (center), bisa diatur dinamis nanti
+        stereoPanner.pan.setValueAtTime(0, audioCtx.currentTime);
+
+        //  Optional: Aktifkan auto-pan (swing kiri-kanan)
+        autoPan = true;
+        animateStereoPan();
+      } else {
+        // Kembali ke output normal
+        if (lastAudioNode) lastAudioNode.connect(audioCtx.destination);
+
+        autoPan = false; // stop animasi pan
+      }
+
+    } catch (err) {
+      console.warn(" Stereo toggle error:", err.message);
+    }
+  });
+}
+
+let autoPan = false;
+function animateStereoPan() {
+  if (!stereoPanner) return;
+
+  let pan = 0;
+  let dir = 1;
+
+  const panSpeed = 0.02;
+  const interval = 30;
+
+  function swing() {
+    if (!autoPan) return;
+    pan += dir * panSpeed;
+    if (pan > 1 || pan < -1) dir *= -1;
+    stereoPanner.pan.setValueAtTime(pan, audioCtx.currentTime);
+    setTimeout(swing, interval);
+  }
+  swing();
+}
+
+
+// Booster Logic  
+// ✅ Booster Logic (Final Fix)
+let boosterMode = "Normal";
+let boosterBand = null;
+let boosterAmount = 2;
+
+const presetSelect = document.getElementById("presetSelect");
+const boosterBtns = {
+  LOW: document.getElementById("boostLow"),
+  MID: document.getElementById("boostMid"),
+  HIGH: document.getElementById("boostHigh")
+};
+
+// ✅ Pasang atau lepas event tombol BOOST
+function setBoosterButtonEvents(active = true) {
+  Object.entries(boosterBtns).forEach(([band, btn]) => {
+    const newBtn = btn.cloneNode(true);
+    btn.parentNode.replaceChild(newBtn, btn);
+    boosterBtns[band] = newBtn;
+
+    if (active) {
+      newBtn.addEventListener("click", () => {
+        if (boosterBand === band) {
+          boosterBand = null;
+        } else {
+          boosterBand = band;
+        }
+        highlightBoosterBand(boosterBand);
+        applyBooster();
+      });
+    }
+  });
+}
+
+// ✅ Terapkan booster
+function applyBooster() {
+  if (!eqFilters || eqFilters.length < 12 || !lastEQ) {
+    console.warn("EQ Filters belum siap");
+    return;
+  }
+
+  const bandMap = {
+    LOW: [0, 1, 2, 3],
+    MID: [4, 5, 6, 7],
+    HIGH: [8, 9, 10, 11]
+  };
+
+  const boostedEQ = lastEQ.map((gain, i) => {
+    if (!boosterBand || boosterAmount === 0 || boosterMode === "standby") return gain;
+    const isTarget = bandMap[boosterBand]?.includes(i);
+    return isTarget ? gain + boosterAmount : gain;
+  });
+
+  boostedEQ.forEach((gain, i) => {
+    eqFilters[i].gain.setTargetAtTime(gain, audioCtx.currentTime, 0.02);
+    const slider = document.getElementById(`eqSlider${i}`);
+    if (slider) slider.value = gain;
+  });
+
+  console.log("Gain final:", boostedEQ);
+}
+
+// ✅ Highlight tombol aktif
+function highlightBoosterBand(activeBand) {
+  Object.entries(boosterBtns).forEach(([band, btn]) => {
+    btn.classList.toggle("active", band === activeBand);
+  });
+}
+
+// ✅ Event utama: ganti mode booster
+presetSelect.addEventListener("change", e => {
+  boosterMode = e.target.value;
+  console.log("Ganti mode:", boosterMode);
+
+  if (boosterMode === "standby") {
+    boosterAmount = 0;
+    boosterBand = null;
+    highlightBoosterBand(null);
+    setBoosterButtonEvents(false);  // Matikan tombol
+    applyBooster();
+    return;
+  }
+
+  // Aktifkan tombol BOOST
+  setBoosterButtonEvents(true);
+
+  switch (boosterMode) {
+    case "Soft": boosterAmount = 1; break;
+    case "Normal": boosterAmount = 2; break;
+    case "Hard": boosterAmount = 3; break;
+    case "Extreme": boosterAmount = 5; break;
+    default: boosterAmount = 2;
+  }
+
+  applyBooster();
+});
+
+
+function onManualPresetChange(name, source) {
+  if (blendActive) toggleBlend(false);
+
+  if (source === "basic") {
+    if (advancePresets[lastManualPreset]) {
+      applyPreset("Flat");
+    }
+  } else if (source === "advance") {
+    if (basicPresets[lastManualPreset]) {
+      applyPreset("Flat");
+    }
+  }
+
+  lastManualPreset = name;
+  applyPreset(name);
+}
+
+
+// ✅ Start Dynamic Tone AI Engine  
+function startDynamicToneAI() {  
+  if (  
+    !analyser || !clarityGain || !clarity || !subwoofer ||  
+    !enhancer || !toneBias || !deEsser ||  
+    !ambient || !loudnessLow  
+  ) {  
+    console.warn("❌ Audio nodes belum lengkap.");  
+    return;  
+  }  
+  
+  const freqData = new Uint8Array(analyser.frequencyBinCount);  
+  const avg = (data, from, to) =>  
+    data.slice(from, to).reduce((a, b) => a + b, 0) / (to - from);  
+  
+  function loop() {  
+    analyser.getByteFrequencyData(freqData);  
+  
+    const low = avg(freqData, 0, 40);  
+    const mid = avg(freqData, 41, 180);  
+    const high = avg(freqData, 181, 512);  
+    const total = low + mid + high || 1;  
+  
+    const lowRatio = low / total;  
+    const midRatio = mid / total;  
+    const highRatio = high / total;  
+    const now = audioCtx.currentTime;  
+  
+    // 🔊 Low-End  
+    subwoofer.gain.setTargetAtTime(lowRatio > 0.42 ? 5.8 : 2.2, now, 0.6);  
+    loudnessLow.gain.setTargetAtTime(lowRatio > 0.38 ? 3.2 : 1.6, now, 0.6);  
+  
+    // 🎧 Mid Clarity  
+    clarityGain.gain.setTargetAtTime(mid < 15 ? 0.88 : 0.55, now, 0.5);  
+    clarity.gain.setTargetAtTime(mid < 15 ? 3.2 : 1.1, now, 0.5);  
+  
+    // ✨ High Enhancer  
+    enhancer.gain.setTargetAtTime(highRatio > 0.4 ? 0.2 : 2.6, now, 0.6);  
+  
+    // 🎚️ Tone Bias  
+    toneBias.gain.setTargetAtTime(midRatio < 0.25 ? 2.2 : 1.1, now, 0.5);  
+  
+    // 🔇 De-Esser  
+    deEsser.gain.setTargetAtTime(highRatio > 0.42 ? -7.5 : -4, now, 0.4);  
+  
+    // 🌌 Ambient Air  
+    ambient.frequency.setTargetAtTime(high > 18 ? 12000 : 6000, now, 0.5);  
+    ambient.Q.setTargetAtTime(high > 18 ? 0.65 : 1.4, now, 0.5);  
+  
+    requestAnimationFrame(loop);  
+  }  
+  
+  console.log("🎛 Full Auto Dynamic Tone AI: ACTIVE");  
+  loop();  
+}  
+
+// ✅ Safe Init - Pastikan EQ sudah ready
+function startSmartInit() {
+  const checkReady = setInterval(() => {
+    if (eqFilters?.length === 12 && gainNode && clarityGain && audioCtx.state === "running") {
+      clearInterval(checkReady);
+      startDynamicToneAI();    // 🎧 AI Engine
+      autoTestLogger();        // 🧪 Logger
+    }
+  }, 300);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  startDynamicToneAI(); // 💡 Auto jalan dari awal
+});
+
+
+// ✅ Test Engine Lengkap
+function autoTestLogger() {
+  const out = document.getElementById("testLog");
+  if (!out) return;
+
+  setInterval(() => {
+    if (!audioCtx || !gainNode || !eqFilters?.length) return;
+
+    const lines = [];
+
+    // 🎛 Preset Info & Mode
+    lines.push("🎛 Preset Aktif: " + (lastManualPreset || "default"));
+    lines.push("🧩 EQ Mode: " + (presetFromDynamic ? "Dynamic" : "Manual"));
+    lines.push("🎯 Booster: " + (boosterBand || "OFF") + ` @ ${boosterAmount ?? 0} dB`);
+    lines.push("🌀 Blend Mode: " + (blendActive ? "ON" : "OFF"));
+
+    // 🎧 EQ Filters
+    lines.push("\n🎧 EQ Bands:");
+    eqFilters.forEach((f, i) => {
+      lines.push(`  • Band ${i + 1}: ${f.frequency.value}Hz → ${f.gain.value.toFixed(2)} dB [${f.type}]`);
+    });
+
+    // 🔊 Effect Nodes
+    lines.push("\n🔊 FX Nodes:");
+    lines.push(`  • Clarity: ${clarity?.frequency?.value ?? "-"}Hz | Q: ${clarity?.Q?.value.toFixed(2) ?? "-"} | Gain: ${clarity?.gain?.value.toFixed(2) ?? "-"} dB`);
+    lines.push(`  • Clarity Gain (Parallel): ${clarityGain?.gain?.value?.toFixed(2) ?? "-"}`);
+    lines.push(`  • Enhancer: ${enhancer?.frequency?.value ?? "-"}Hz | Gain: ${enhancer?.gain?.value.toFixed(2) ?? "-"} dB`);
+    lines.push(`  • Subwoofer: ${subwoofer?.frequency?.value ?? "-"}Hz | Gain: ${subwoofer?.gain?.value.toFixed(2) ?? "-"} dB`);
+    lines.push(`  • DeEsser: ${deEsser?.frequency?.value ?? "-"}Hz | Q: ${deEsser?.Q?.value.toFixed(2) ?? "-"} | Gain: ${deEsser?.gain?.value.toFixed(2) ?? "-"} dB`);
+    lines.push(`  • Loudness Low: ${loudnessLow?.frequency?.value ?? "-"}Hz | Gain: ${loudnessLow?.gain?.value.toFixed(2) ?? "-"} dB`);
+    lines.push(`  • Loudness High: ${loudnessHigh?.frequency?.value ?? "-"}Hz | Gain: ${loudnessHigh?.gain?.value.toFixed(2) ?? "-"} dB`);
+    lines.push(`  • Tone Bias: ${toneBias?.frequency?.value ?? "-"}Hz | Gain: ${toneBias?.gain?.value.toFixed(2) ?? "-"} dB`);
+    lines.push(`  • Ambient LPF: ${ambient?.frequency?.value ?? "-"}Hz | Q: ${ambient?.Q?.value.toFixed(2) ?? "-"}`);
+
+    // 📦 Compressor & Limiters
+    lines.push("\n📦 Compressor:");
+    lines.push(`  • Threshold: ${compressor?.threshold?.value ?? "-"} dB`);
+    lines.push(`  • Ratio: ${compressor?.ratio?.value ?? "-"}`);
+    lines.push(`  • Attack: ${compressor?.attack?.value ?? "-"} s`);
+    lines.push(`  • Release: ${compressor?.release?.value ?? "-"} s`);
+
+    lines.push("\n🧠 AGC Limiter:");
+    lines.push(`  • Threshold: ${agcLimiter?.threshold?.value ?? "-"} dB`);
+    lines.push(`  • Ratio: ${agcLimiter?.ratio?.value ?? "-"}`);
+    lines.push(`  • Attack: ${agcLimiter?.attack?.value ?? "-"} s`);
+    lines.push(`  • Release: ${agcLimiter?.release?.value ?? "-"} s`);
+
+    lines.push("\n🧽 Soft Limiter:");
+    lines.push(`  • Threshold: ${softLimiter?.threshold?.value ?? "-"} dB`);
+    lines.push(`  • Ratio: ${softLimiter?.ratio?.value ?? "-"}`);
+    lines.push(`  • Attack: ${softLimiter?.attack?.value ?? "-"} s`);
+    lines.push(`  • Release: ${softLimiter?.release?.value ?? "-"} s`);
+
+    lines.push("\n🚨 Peak Limiter:");
+    lines.push(`  • Threshold: ${peakLimiter?.threshold?.value ?? "-"} dB`);
+    lines.push(`  • Ratio: ${peakLimiter?.ratio?.value ?? "-"}`);
+    lines.push(`  • Attack: ${peakLimiter?.attack?.value ?? "-"} s`);
+    lines.push(`  • Release: ${peakLimiter?.release?.value ?? "-"} s`);
+
+    // 🔊 Output & Stereo
+    lines.push("\n📣 Output Gain: " + gainNode?.gain?.value?.toFixed(2));
+    lines.push("🔀 Stereo Pan: " + (stereoPanner?.pan?.value?.toFixed(2) ?? "0"));
+    lines.push("🎚 AutoPan: " + (stereoToggleState ? "ON" : "OFF"));
+
+    // 🌈 Visualizer
+    lines.push("🌈 Visualizer: " + (waveformActive ? "ON" : "OFF"));
+
+    // 🖨️ Output
+    const logText = lines.join("\n");
+    out.textContent = logText;
+    console.log("🎛 Mesin Audio Info:\n" + logText);
+  }, 1000);
+}
+
+
+
+
+const lockBtn = document.getElementById("lockScreenBtn");
+const overlay = document.getElementById("overlayLock");
+
+lockBtn.addEventListener("click", () => {
+  const isLocked = document.body.classList.toggle("locked");
+  overlay.style.display = isLocked ? "block" : "none";
+  lockBtn.textContent = isLocked ? "🔒 Unlock" : "🔓 Lock";
+
+  // ⬇️ Ini dia taruh di sini:
+  document.body.classList.toggle("locked", isLocked);
+});
+
+
+
+
+
+<!-- ✅ JS REAL-TIME + DRAGGABLE -->
+// 🕒 
+const roman = ["XII", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI"];
+const numeralWrap = document.getElementById("mini-numerals");
+const centerX = 70, centerY = 70, radius = 58, angleOffset = -90;
+
+roman.forEach((num, i) => {
+  const angle = (i * 30 + angleOffset) * Math.PI / 180;
+  const x = centerX + radius * Math.cos(angle);
+  const y = centerY + radius * Math.sin(angle);
+
+  const div = document.createElement("div");
+  div.innerText = num;
+  Object.assign(div.style, {
+    position: "absolute",
+    left: `${x}px`,
+    top: `${y}px`,
+    transform: "translate(-50%, -50%)",
+    fontSize: "10px",
+    fontWeight: "bold",
+    fontFamily: "'Cinzel Decorative', cursive",
+    color: "#0ff",
+    textShadow: "0 0 4px #0ff"
+  });
+
+  numeralWrap.appendChild(div);
+});
+
+// ⏱️ Update jam analog mini setiap detik
+function updateMiniClock() {
+  const now = new Date();
+  const sec = now.getSeconds();
+  const min = now.getMinutes();
+  const hr = now.getHours() % 12;
+
+  const minAngle = min * 6 + sec * 0.1;
+  const hrAngle = hr * 30 + min * 0.5;
+
+  document.getElementById("mini-minute").style.transform =
+    `translate(-50%, -100%) rotate(${minAngle}deg)`;
+  document.getElementById("mini-hour").style.transform =
+    `translate(-50%, -100%) rotate(${hrAngle}deg)`;
+}
+setInterval(updateMiniClock, 1000);
+updateMiniClock();
+
+// 🧲 Widget bisa digeser (draggable)
+const widget = document.getElementById("mini-clock");
+let offsetX = 0, offsetY = 0, isDragging = false;
+
+function getPos(e) {
+  const p = e.touches ? e.touches[0] : e;
+  return { x: p.clientX, y: p.clientY };
+}
+
+function dragStart(e) {
+  isDragging = true;
+  const pos = getPos(e);
+  offsetX = pos.x - widget.offsetLeft;
+  offsetY = pos.y - widget.offsetTop;
+}
+
+function dragMove(e) {
+  if (!isDragging) return;
+  const pos = getPos(e);
+  widget.style.left = (pos.x - offsetX) + "px";
+  widget.style.top = (pos.y - offsetY) + "px";
+}
+
+widget.addEventListener("mousedown", dragStart);
+widget.addEventListener("touchstart", dragStart);
+document.addEventListener("mousemove", dragMove);
+document.addEventListener("touchmove", dragMove);
+document.addEventListener("mouseup", () => isDragging = false);
+document.addEventListener("touchend", () => isDragging = false);
+
+let clockVisible = true;
+function toggleClock() {
+  const el = document.getElementById("mini-clock");
+  const btn = event.target;
+  clockVisible = !clockVisible;
+  el.style.display = clockVisible ? "block" : "none";
+  btn.textContent = clockVisible ? "🕒 Hide Clock" : "🕒 Show Clock";
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  autoTestLogger();
+  });
+});
+
+
+  if ('serviceWorker' in navigator) {    
+    navigator.serviceWorker.register('sw.js')    
+      .then(reg => console.log('✅ Service Worker registered:', reg.scope))    
+      .catch(err => console.error('❌ Service Worker registration failed:', err));    
+  }    
+
+console.log("✅ Script Loaded");
+
+</script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
