@@ -101,6 +101,138 @@
     #fileInput {
       display: none;
     }
+    
+  .eq-wrapper {  
+    display: flex;  
+    flex-direction: column;  
+    align-items: center;  
+    padding: 12px;  
+    width: 92vw;  
+    max-width: 360px;  
+    position: fixed;  
+    top: 20px;  
+    right: 15px;  
+    background: transparent;  
+    z-index: 9999;  
+  }  
+  
+  .eq-header {  
+    display: flex;  
+    justify-content: space-between;  
+    align-items: center;  
+    width: 100%;  
+    color: #fff;  
+  }  
+  
+  .eq-container {  
+    display: flex;  
+    gap: 1px;  
+    margin-top: 10px;  
+    transition: max-height 0.3s ease;  
+  }  
+  
+  .eq-sliders {  
+    display: flex;  
+    gap: 8px;  
+    padding: 12px 0;  
+    justify-content: center;  
+    flex-direction: column;  
+    align-items: center;  
+    width: 28px;  
+    position: relative;  
+  }  
+  
+  .slider-wrapper {  
+    position: relative;  
+    height: 140px;  
+    width: 20px;  
+    background: none;  
+  }  
+  
+  .slider-wrapper::before {  
+    content: '';  
+    position: absolute;  
+    top: 8px;  
+    bottom: 8px;  
+    left: 50%;  
+    width: 2px;  
+    background: linear-gradient(to bottom, #666, #aaa, #666);  
+    transform: translateX(-50%);  
+  }  
+  
+  .slider-lines {  
+    position: absolute;  
+    width: 100%;  
+    height: 100%;  
+    display: flex;  
+    flex-direction: column;  
+    justify-content: space-between;  
+  }  
+  
+  .slider-lines span {  
+    height: 1px;  
+    background: #444;  
+    opacity: 0.6;  
+  }  
+  
+  .slider {  
+    position: absolute;  
+    width: 140px;  
+    height: 20px;  
+    transform: rotate(270deg);  
+    top: 50%;  
+    left: 50%;  
+    translate: -50% -50%;  
+    background: transparent;  
+    appearance: none;  
+    z-index: 2;  
+  }  
+  
+  .slider::-webkit-slider-thumb {  
+    appearance: none;  
+    width: 10px;  
+    height: 10px;  
+    background: #ccc;  
+    border: 1px solid #777;  
+    box-shadow: 0 1px 2px #000a;  
+    cursor: pointer;  
+  }  
+  
+  .slider::-moz-range-thumb {  
+    width: 10px;  
+    height: 10px;  
+    background: #ccc;  
+    border: 1px solid #777;  
+    box-shadow: 0 1px 2px #000a;  
+    cursor: pointer;  
+  }  
+  
+  .freq-label {  
+    margin-top: 5px;  
+    font-size: 6px;  
+    color: #ffffff;  
+    text-align: center;  
+  }  
+  
+  .minimized {  
+    display: none !important;  
+  }  
+  
+  #eqToggleBtn {  
+    background: none;  
+    border: none;  
+    color: #0ff;  
+    font-size: 18px;  
+    cursor: pointer;  
+  }  
+
+@media (max-width: 600px) {
+  #eqPanel {
+    width: 90vw;
+    left: 5vw;
+  }
+}
+  
   </style>
 </head>
 <body>
@@ -111,6 +243,14 @@
 
   <!-- Tap area -->
   <div id="tapArea"></div>
+  
+<div class="eq-wrapper" id="eqWrapper">  
+  <div class="eq-header">  
+    <h4>🎚️ Equalizer</h4>  
+    <button id="eqToggleBtn">−</button>  
+  </div>  
+  <div class="eq-container" id="eqContainer"></div>  
+</div>  
 
   <!-- Player Full -->
   <div id="player">
@@ -137,6 +277,71 @@
     const bgVideo = document.getElementById("bgVideo");
     const bgImage = document.getElementById("bgImage");
     const audio = document.getElementById("audio");
+
+
+  
+  const eqFrequencies = [  
+    32, 64, 125, 250, 500, 1000,  
+    2000, 4000, 8000, 12000, 16000, 20000  
+  ];  
+  
+  const eqContainer = document.getElementById("eqContainer");  
+  const eqToggleBtn = document.getElementById("eqToggleBtn");  
+  
+  function createEQSliders() {  
+    if (!eqContainer) return;  
+  
+    eqContainer.innerHTML = ""; // Clear existing sliders  
+    eqContainer.style.display = "flex";  
+  
+    eqFrequencies.forEach(freq => {  
+      const sliderDiv = document.createElement("div");  
+      sliderDiv.className = "eq-sliders";  
+  
+      const wrapper = document.createElement("div");  
+      wrapper.className = "slider-wrapper";  
+  
+      const lines = document.createElement("div");  
+      lines.className = "slider-lines";  
+      for (let i = 0; i < 5; i++) {  
+        lines.appendChild(document.createElement("span"));  
+      }  
+  
+      const slider = document.createElement("input");  
+      slider.type = "range";  
+      slider.min = 0;  
+      slider.max = 100;  
+      slider.value = 50;  
+      slider.className = "slider";  
+  
+      slider.addEventListener("input", () => {  
+        const val = parseInt(slider.value);  
+        const db = (val - 50) / 5;  
+        console.log(`Freq: ${freq} Hz, Gain: ${db} dB`);  
+        // if (eqNodes[i]) eqNodes[i].gain.value = db;  
+      });  
+  
+      wrapper.appendChild(lines);  
+      wrapper.appendChild(slider);  
+  
+      const label = document.createElement("div");  
+      label.className = "freq-label";  
+      label.innerText = freq >= 1000 ? `${freq / 1000}kHz` : `${freq}Hz`;  
+  
+      sliderDiv.appendChild(wrapper);  
+      sliderDiv.appendChild(label);  
+      eqContainer.appendChild(sliderDiv);  
+    });  
+  }  
+  
+  eqToggleBtn.addEventListener("click", () => {  
+    eqContainer.classList.toggle("minimized");  
+    eqToggleBtn.textContent = eqContainer.classList.contains("minimized") ? "+" : "−";  
+  });  
+  
+  createEQSliders();  
+
+
 
     let lastTap = 0;
 
