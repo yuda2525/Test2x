@@ -458,7 +458,11 @@ const eqPresets = {
 },
   "Volume++": {
     eq: [2, 1.5, 1.2, 0.8, 0, 1, 1.8, 2.2, 2.8, 3.5, 3, 2],
-    enhancer: 1.4,
+  enhancer: {
+    presence: 2,
+    brilliance: 3,
+  warmth: 1.5
+  },
     compressor: -13.5,
     limiter: {
       enabled: true,
