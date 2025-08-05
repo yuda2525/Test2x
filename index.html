@@ -295,13 +295,11 @@
     const bgVideo = document.getElementById("bgVideo");
     const bgImage = document.getElementById("bgImage");
     const audio = document.getElementById("audio");
-
-
-  
-  const eqFrequencies = [10, 32, 64, 125, 250, 500, 1000, 2000, 4000, 10000, 16000, 20000];
   
   const eqContainer = document.getElementById("eqContainer");  
   const eqToggleBtn = document.getElementById("eqToggleBtn");  
+  
+    const eqFrequencies = [10, 32, 64, 125, 250, 500, 1000, 2000, 4000, 10000, 16000, 20000];
   
   function createEQSliders() {  
     if (!eqContainer) return;  
@@ -322,12 +320,13 @@
         lines.appendChild(document.createElement("span"));  
       }  
   
-      const slider = document.createElement("input");  
-      slider.type = "range";  
-      slider.min = 0;  
-      slider.max = 100;  
-      slider.value = 50;  
-      slider.className = "slider";  
+const slider = document.createElement("input");
+slider.type = "range";
+slider.min = 0;
+slider.max = 100;
+slider.value = 50;
+slider.className = "slider";
+slider.id = `eq-slider-${eqFrequencies.indexOf(freq)}`; // ⬅️ Tambahkan ini
   
       slider.addEventListener("input", () => {  
         const val = parseInt(slider.value);  
@@ -363,6 +362,7 @@ const presetSelect = document.getElementById("eqPresetDropdown");
 let audioCtx, sourceNode, gainNode, eqNodes = [], compressor;
 let isInitialized = false;
 
+let bands = [10, 32, 64, 125, 250, 500, 1000, 2000, 4000, 10000, 16000, 20000];
 const eqPresets = {
   "Flat":  {
     eq: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -524,8 +524,6 @@ return [lowShelf, subDip, lowMidCut, midBody, clarity, harshTamer, highShelf, ai
   },
 };
 
-const frequencies = [32, 64, 125, 250, 500, 1000, 2000, 4000, 8000, 16000];
-
 // === INISIALISASI AUDIO GRAPH ===
 function initAudio() {
   if (isInitialized) return;
@@ -534,13 +532,25 @@ function initAudio() {
   sourceNode = audioCtx.createMediaElementSource(audioElement);
 
   // EQ Nodes
-  eqNodes = frequencies.map(freq => {
+eqNodes = eqFrequencies.map(freq => {
     const filter = audioCtx.createBiquadFilter();
     filter.type = "peaking";
     filter.frequency.value = freq;
     filter.Q.value = 1;
     filter.gain.value = 0;
     return filter;
+  });
+
+  // === HUBUNGKAN SLIDER DENGAN EQ NODES ===
+eqFrequencies.forEach((freq, i) => {
+    const slider = document.getElementById(`eq-slider-${i}`);
+    if (!slider) return;
+
+    slider.addEventListener("input", () => {
+      const val = parseInt(slider.value);
+      const db = (val - 50) / 5;
+      if (eqNodes[i]) eqNodes[i].gain.value = db;
+    });
   });
 
   // Gain & Compressor
@@ -560,6 +570,7 @@ function initAudio() {
 
   isInitialized = true;
 }
+
 
 // === APLIKASI PRESET ===
 function applyPreset(presetName) {
@@ -590,15 +601,44 @@ function applyEQPreset(presetName) {
   });
 
   // Apply FX (jika ada handler-nya)
-  // applyEnhancer(preset.enhancer);
-  // applyCompressor(preset.compressor);
-  // applyLimiter(preset.limiter);
-  // setStereoWidth(preset.stereoWidth);
-  // applyReverb(preset.reverb);
+if (preset.enhancer) applyEnhancer(preset.enhancer);
+if (preset.compressor) applyCompressor(preset.compressor);
+if (preset.limiter) applyLimiter(preset.limiter);
+if (preset.stereoWidth) setStereoWidth(preset.stereoWidth);
+if (preset.reverb) applyReverb(preset.reverb);
+
+function applyEnhancer(config) {
+  console.log("applyEnhancer dipanggil dengan:", config);
+  // TODO: Implementasi enhancer effect di sini
+}
+
+function applyCompressor(config) {
+  console.log("applyCompressor dipanggil dengan:", config);
+  // TODO: Implementasi compressor effect di sini
+}
+
+function applyLimiter(config) {
+  console.log("applyLimiter dipanggil dengan:", config);
+  // TODO: Implementasi limiter effect di sini
+}
+
+function setStereoWidth(value) {
+  console.log("Stereo width diset ke:", value);
+  // TODO: Implementasi stereo width di sini
+}
+
+function applyReverb(amount) {
+  console.log("Reverb diset ke:", amount);
+  // TODO: Implementasi reverb di sini
+}
 }
 
 eqPresetDropdown.addEventListener("change", (e) => {
   applyEQPreset(e.target.value);
+});
+
+window.addEventListener("DOMContentLoaded", () => {
+  applyEQPreset("Flat");  
 });
 
 // === TRIGGER INIT SAAT PERTAMA KALI DIKLIK / PLAY ===
@@ -607,8 +647,8 @@ document.addEventListener("click", () => {
     initAudio();
 
     // === Langsung pakai Volume++ dari awal ===
-    presetSelect.value = "Volume++";
-    applyPreset("Volume++");
+presetSelect.value = "Volume++";
+applyEQPreset("Volume++");
   }
 
   if (audioCtx && audioCtx.state === "suspended") {
@@ -617,6 +657,27 @@ document.addEventListener("click", () => {
 });
 
 console.log("Preset Volume++ auto-applied");
+
+function applyCustomFilters(preset) {
+  if (!preset.filters || typeof preset.filters !== "function") return;
+
+  const filters = preset.filters(audioCtx);
+  if (!filters || !filters.length) return;
+
+  // Sambung ke chain
+  // Disconnect existing chain dulu (if needed)
+  sourceNode.disconnect();
+
+  // Rebuild chain: source → custom filters → eqNodes[0]...
+  let lastNode = sourceNode;
+  filters.forEach(filter => {
+    lastNode.connect(filter);
+    lastNode = filter;
+  });
+
+  // Sambung ke EQ chain
+  lastNode.connect(eqNodes[0]);
+}
 
 
 
