@@ -740,22 +740,32 @@ function applyCustomFilters(preset) {
       audio.play();
     }
     
-       function enterFullscreenOnce() {
-      const docElm = document.documentElement;
-      if (docElm.requestFullscreen) docElm.requestFullscreen();
-      else if (docElm.webkitRequestFullscreen) docElm.webkitRequestFullscreen();
-      else if (docElm.mozRequestFullScreen) docElm.mozRequestFullScreen();
-      else if (docElm.msRequestFullscreen) docElm.msRequestFullscreen();
-    }
+let autoFullscreenInterval = null;
 
-    // Jaga tetap fullscreen
-    document.addEventListener("fullscreenchange", () => {
-      if (!document.fullscreenElement) {
-        setTimeout(() => {
-          enterFullscreenOnce();
-        }, 300);
-      }
-    });
+function enterFullscreen() {
+  const docElm = document.documentElement;
+  if (docElm.requestFullscreen) docElm.requestFullscreen();
+  else if (docElm.webkitRequestFullscreen) docElm.webkitRequestFullscreen();
+  else if (docElm.mozRequestFullScreen) docElm.mozRequestFullScreen();
+  else if (docElm.msRequestFullscreen) docElm.msRequestFullscreen();
+}
+
+function startAutoFullscreen() {
+  enterFullscreen();
+
+  // Set interval untuk ngecek terus
+  autoFullscreenInterval = setInterval(() => {
+    if (!document.fullscreenElement) {
+      enterFullscreen();
+    }
+  }, 2000); // cek tiap 2 detik
+}
+
+// Aktifin auto fullscreen saat pertama kali user klik apa pun
+document.body.addEventListener("click", function once() {
+  startAutoFullscreen();
+  document.body.removeEventListener("click", once);
+});
 
     // Hanya aktif saat interaksi
     document.addEventListener("click", () => {
