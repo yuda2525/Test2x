@@ -241,7 +241,7 @@
   
   </style>
 </head>
-<body>
+<body onclick="enterFullscreenOnce()">
 
   <!-- Background video/image -->
   <video id="bgVideo" autoplay muted loop></video>
@@ -739,6 +739,28 @@ function applyCustomFilters(preset) {
     function playAudio() {
       audio.play();
     }
+    
+       function enterFullscreenOnce() {
+      const docElm = document.documentElement;
+      if (docElm.requestFullscreen) docElm.requestFullscreen();
+      else if (docElm.webkitRequestFullscreen) docElm.webkitRequestFullscreen();
+      else if (docElm.mozRequestFullScreen) docElm.mozRequestFullScreen();
+      else if (docElm.msRequestFullscreen) docElm.msRequestFullscreen();
+    }
+
+    // Jaga tetap fullscreen
+    document.addEventListener("fullscreenchange", () => {
+      if (!document.fullscreenElement) {
+        setTimeout(() => {
+          enterFullscreenOnce();
+        }, 300);
+      }
+    });
+
+    // Hanya aktif saat interaksi
+    document.addEventListener("click", () => {
+      enterFullscreenOnce();
+    }, { once: true });
     
   if ('serviceWorker' in navigator) {    
     navigator.serviceWorker.register('sw.js')    
