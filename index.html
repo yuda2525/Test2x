@@ -747,23 +747,27 @@ function applyCustomFilters(preset) {
 
     let allowAutoFullscreen = true;
 
+    // Fungsi masuk fullscreen
     function enterFullscreenOnce() {
-      const docElm = document.documentElement;
-      if (docElm.requestFullscreen) docElm.requestFullscreen();
-      else if (docElm.webkitRequestFullscreen) docElm.webkitRequestFullscreen();
-      else if (docElm.mozRequestFullScreen) docElm.mozRequestFullScreen();
-      else if (docElm.msRequestFullscreen) docElm.msRequestFullscreen();
+      const elem = document.documentElement;
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+      } else if (elem.webkitRequestFullscreen) {
+        elem.webkitRequestFullscreen();
+      } else if (elem.msRequestFullscreen) {
+        elem.msRequestFullscreen();
+      }
     }
 
-    // Jalankan sekali saat user klik pertama
-    document.addEventListener("click", function autoEnterFullscreenOnce() {
-      enterFullscreenOnce();
-      document.removeEventListener("click", autoEnterFullscreenOnce);
+    // Dengarkan klik pertama user
+    document.addEventListener("click", function handleFirstClick() {
+      enterFullscreenOnce(); // Masuk fullscreen
+      document.removeEventListener("click", handleFirstClick); // Hapus event agar cuma sekali
     });
 
-    // Jaga tetap fullscreen
+    // Jika fullscreen ke-cancel, coba minta lagi setelah 1.5 detik
     document.addEventListener("fullscreenchange", () => {
-      if (!document.fullscreenElement && allowAutoFullscreen) {
+      if (!document.fullscreenElement) {
         setTimeout(() => {
           enterFullscreenOnce();
         }, 1500);
