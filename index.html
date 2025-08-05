@@ -241,7 +241,7 @@
   
   </style>
 </head>
-<body onclick="enterFullscreenOnce()">
+</body>
 
   <!-- Background video/image -->
   <video id="bgVideo" autoplay muted loop></video>
@@ -289,7 +289,9 @@
   <!-- File input -->
   <input type="file" id="fileInput" accept="audio/*,video/*,image/*" />
 
-  <script>
+<script>
+window.addEventListener("error", e => console.error("❌ Global Error:", e.message));
+  	
     const tapArea = document.getElementById("tapArea");
     const fileInput = document.getElementById("fileInput");
     const bgVideo = document.getElementById("bgVideo");
@@ -740,32 +742,36 @@ function applyCustomFilters(preset) {
       audio.play();
     }
     
-let autoFullscreenInterval = null;
 
-function enterFullscreen() {
-  const docElm = document.documentElement;
-  if (docElm.requestFullscreen) docElm.requestFullscreen();
-  else if (docElm.webkitRequestFullscreen) docElm.webkitRequestFullscreen();
-  else if (docElm.mozRequestFullScreen) docElm.mozRequestFullScreen();
-  else if (docElm.msRequestFullscreen) docElm.msRequestFullscreen();
-}
 
-function startAutoFullscreen() {
-  enterFullscreen();
 
-  // Set interval untuk ngecek terus
-  autoFullscreenInterval = setInterval(() => {
-    if (!document.fullscreenElement) {
-      enterFullscreen();
+    let allowAutoFullscreen = true;
+
+    function enterFullscreenOnce() {
+      const docElm = document.documentElement;
+      if (docElm.requestFullscreen) docElm.requestFullscreen();
+      else if (docElm.webkitRequestFullscreen) docElm.webkitRequestFullscreen();
+      else if (docElm.mozRequestFullScreen) docElm.mozRequestFullScreen();
+      else if (docElm.msRequestFullscreen) docElm.msRequestFullscreen();
     }
-  }, 2000); // cek tiap 2 detik
-}
 
-// Aktifin auto fullscreen saat pertama kali user klik apa pun
-document.body.addEventListener("click", function once() {
-  startAutoFullscreen();
-  document.body.removeEventListener("click", once);
-});
+    // Jalankan sekali saat user klik pertama
+    document.addEventListener("click", function autoEnterFullscreenOnce() {
+      enterFullscreenOnce();
+      document.removeEventListener("click", autoEnterFullscreenOnce);
+    });
+
+    // Jaga tetap fullscreen
+    document.addEventListener("fullscreenchange", () => {
+      if (!document.fullscreenElement && allowAutoFullscreen) {
+        setTimeout(() => {
+          enterFullscreenOnce();
+        }, 1500);
+      }
+    });
+
+
+
 
     // Hanya aktif saat interaksi
     document.addEventListener("click", () => {
